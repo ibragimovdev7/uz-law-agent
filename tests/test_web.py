@@ -54,8 +54,9 @@ class Pages(Server):
 
     def test_the_recorded_runs(self):
         status, _, body = self.request("GET", "/api/runs")
-        runs = {r["name"]: r["question"] for r in json.loads(body)}
-        self.assertEqual(runs["q1_week"], "Normal ish haftasi necha soat?")
+        runs = {r["name"]: r for r in json.loads(body)}
+        self.assertEqual(runs["q1_week"]["question"], "Normal ish haftasi necha soat?")
+        self.assertEqual((runs["q2_under18"]["steps"], runs["q2_under18"]["citations"]), (3, ["182", "415"]))
         status, _, body = self.request("GET", "/api/runs/q2_under18")
         self.assertEqual(json.loads(body)["answer"]["citations"], ["182", "415"])
         self.assertEqual(self.request("GET", "/api/runs/..%2F.env")[0], 404)      # only the runs in traces/

@@ -4,171 +4,322 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mehnat kodeksi agenti</title>
+<meta name="color-scheme" content="light dark">
 <style>
 :root {
-  --bg: #f6f6f3; --surface: #ffffff; --sunken: #f0efea; --text: #1c1c1a; --muted: #6a6964; --border: #e2e0da;
-  --accent: #0f6b5a; --accent-text: #ffffff; --accent-soft: #e2f0ec; --error: #b3261e; --error-soft: #fbeae8;
-  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  --bg: #f7f7f4; --surface: #ffffff; --surface-2: #f2f1ed; --border: #e6e4de; --border-2: #d7d5cd;
+  --text: #191917; --text-2: #3f3e3a; --muted: #73716a;
+  --accent: #047857; --accent-2: #0f766e; --accent-fg: #ffffff; --accent-soft: #e7f4ee; --accent-line: #b5dccb;
+  --ring: rgba(4, 120, 87, .22); --error: #b42318; --error-soft: #fdf1ef;
+  --shadow: 0 1px 2px rgba(25, 25, 20, .04), 0 10px 30px -12px rgba(25, 25, 20, .12);
+  --shadow-lg: 0 30px 80px -20px rgba(25, 25, 20, .35);
+  --glow: rgba(16, 185, 129, .13);
+  --sans: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Roboto, "Noto Sans", sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #131312; --surface: #1c1c1a; --sunken: #232320; --text: #ecebe6; --muted: #a09f98; --border: #33322e;
-    --accent: #4cc0a2; --accent-text: #0b1a16; --accent-soft: #19332c; --error: #f28b82; --error-soft: #3a1f1c;
-    --shadow: none;
+    --bg: #0c0c0b; --surface: #151514; --surface-2: #1d1d1b; --border: #292825; --border-2: #3a3935;
+    --text: #f3f2ee; --text-2: #d3d1ca; --muted: #9b9991;
+    --accent: #3fd0a0; --accent-2: #2cc4b4; --accent-fg: #04231a; --accent-soft: rgba(63, 208, 160, .10);
+    --accent-line: rgba(63, 208, 160, .32); --ring: rgba(63, 208, 160, .28); --error: #f6877c; --error-soft: rgba(246, 135, 124, .09);
+    --shadow: 0 0 0 1px rgba(255, 255, 255, .015), 0 10px 30px -12px rgba(0, 0, 0, .6);
+    --shadow-lg: 0 30px 80px -20px rgba(0, 0, 0, .8);
+    --glow: rgba(63, 208, 160, .10);
     color-scheme: dark;
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+html { -webkit-text-size-adjust: 100%; }
+html.locked { overflow: hidden; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto 0; height: 520px; pointer-events: none; z-index: -1;
+  background: radial-gradient(60% 70% at 50% -10%, var(--glow), transparent 70%); }
 button, textarea { font: inherit; color: inherit; }
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
-.muted { color: var(--muted); }
-.small { font-size: 13px; }
-.nowrap { white-space: nowrap; }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.ic { width: 18px; height: 18px; flex: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[hidden] { display: none !important; }
 
-.top { border-bottom: 1px solid var(--border); background: var(--surface); }
-.brand { display: flex; align-items: center; gap: 12px; padding: 14px 0; }
-.mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9px; background: var(--accent); color: var(--accent-text); font-weight: 700; font-size: 19px; }
-h1 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
-.brand p { margin: 0; font-size: 13px; }
+/* header */
+.top { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); }
+.top-in { max-width: 1080px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 11px; min-width: 0; border: 0; background: none; padding: 0; text-align: left; }
+.mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; flex: none; font-weight: 800; font-size: 18px;
+  color: var(--accent-fg); background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 4px 12px -4px var(--ring); }
+.brand b { display: block; font-size: 15px; letter-spacing: -.01em; line-height: 1.25; }
+.brand small { display: block; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ghost { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2);
+  border-radius: 10px; padding: 7px 12px; font-size: 14px; font-weight: 500; transition: border-color .15s, background .15s, transform .15s; white-space: nowrap; }
+.ghost:hover { border-color: var(--border-2); background: var(--surface-2); }
+.ghost .ic { width: 16px; height: 16px; }
+.ghost.sm { padding: 5px 10px; font-size: 13px; border-radius: 9px; }
 
-.layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; padding-top: 24px; padding-bottom: 24px; align-items: start; }
-aside { position: sticky; top: 16px; display: grid; gap: 16px; max-height: calc(100vh - 32px); overflow: auto; }
+/* page */
+main { max-width: 780px; margin: 0 auto; padding: 28px 16px 48px; }
+.hero { text-align: center; padding: 36px 0 26px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px 5px 10px; box-shadow: var(--shadow); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.hero h1 { font-size: clamp(30px, 6vw, 46px); line-height: 1.08; letter-spacing: -.03em; margin: 20px auto 14px; font-weight: 750; max-width: 24ch; text-wrap: balance; }
+.grad { background: linear-gradient(120deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p { color: var(--muted); font-size: 17px; max-width: 50ch; margin: 0 auto; }
 
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
-form.card { padding: 12px; }
-textarea { width: 100%; resize: vertical; min-height: 56px; border: 0; outline: 0; background: transparent; padding: 4px 6px; }
-.row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 8px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { border: 1px solid var(--border); background: var(--sunken); border-radius: 999px; padding: 3px 10px; font-size: 13px; cursor: pointer; }
-.chip:hover { border-color: var(--accent); }
-.primary { border: 0; background: var(--accent); color: var(--accent-text); border-radius: 9px; padding: 8px 16px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-.primary:disabled { opacity: .55; cursor: progress; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* composer */
+.composer { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow);
+  padding: 14px 14px 12px 20px; transition: border-color .2s, box-shadow .2s; }
+.composer:focus-within { border-color: var(--accent-line); box-shadow: 0 0 0 4px var(--ring), var(--shadow); }
+.composer textarea { display: block; width: 100%; border: 0; outline: 0; background: transparent; resize: none; font-size: 17px; line-height: 1.5;
+  min-height: 52px; max-height: 220px; padding: 4px 0; }
+.composer textarea::placeholder { color: var(--muted); }
+.cbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.hint { font-size: 12.5px; color: var(--muted); }
+kbd { font: 600 11px/1 var(--sans); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 2px 5px; background: var(--surface-2); }
+.send { width: 42px; height: 42px; border-radius: 13px; border: 0; display: grid; place-items: center; flex: none;
+  color: var(--accent-fg); background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 6px 16px -6px var(--ring); transition: transform .15s, opacity .15s, filter .15s; }
+.send:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.send:disabled { opacity: .55; cursor: progress; transform: none; }
+.send .ic { width: 20px; height: 20px; }
+.send .spin { width: 18px; height: 18px; border-color: color-mix(in srgb, var(--accent-fg) 35%, transparent); border-top-color: var(--accent-fg); }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 16px; }
+.chip { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 999px; padding: 7px 14px; font-size: 14px;
+  transition: border-color .15s, color .15s, transform .15s, box-shadow .15s; }
+.chip:hover { border-color: var(--accent-line); color: var(--text); transform: translateY(-1px); box-shadow: var(--shadow); }
 
-.empty { padding: 28px 4px; max-width: 60ch; }
-.qline { display: flex; align-items: center; gap: 8px; margin: 24px 0 4px; }
-.question { margin: 0 0 12px; font-weight: 600; font-size: 18px; overflow-wrap: anywhere; }
-.label { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.badge { font-size: 12px; border-radius: 999px; padding: 1px 8px; background: var(--sunken); border: 1px solid var(--border); color: var(--muted); }
+/* samples */
+.samples { margin-top: 48px; }
+.kicker { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+.kicker .ic { width: 15px; height: 15px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.sample { text-align: left; border: 1px solid var(--border); background: var(--surface); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px;
+  justify-content: space-between; transition: border-color .15s, transform .15s, box-shadow .15s; }
+.sample:hover { border-color: var(--accent-line); transform: translateY(-2px); box-shadow: var(--shadow); }
+.sample b { font-weight: 550; font-size: 15px; line-height: 1.45; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12.5px; color: var(--muted); align-items: center; }
+.pill { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 650;
+  color: var(--accent); background: var(--accent-soft); font-variant-numeric: tabular-nums; }
+.tag { border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; background: var(--surface-2); }
 
-.answer { padding: 16px 18px; }
-.answer p { margin: 0 0 10px; }
-.answer ul { margin: 0 0 10px; padding-left: 22px; }
-.answer.error { background: var(--error-soft); border-color: transparent; color: var(--error); }
-.answer.waiting { color: var(--muted); display: flex; align-items: center; gap: 10px; }
-.cites { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; }
-.cite, .link { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
-.spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite; flex: none; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+/* result */
+.qhead { margin: 36px 0 16px; }
+.qhead .kicker { margin-bottom: 6px; }
+.qhead h2 { margin: 0; font-size: clamp(21px, 3.6vw, 26px); line-height: 1.3; letter-spacing: -.02em; font-weight: 700; overflow-wrap: anywhere; }
+.badge { font-size: 11px; letter-spacing: .02em; text-transform: none; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); }
+.answer { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; animation: rise .35s ease both; }
+.ahead { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 18px; border-bottom: 1px solid var(--border); }
+.ahead > div { flex: 1; min-width: 0; }
+.ahead b { display: block; font-size: 15px; }
+.ameta { display: block; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.abadge { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; flex: none; color: var(--accent); background: var(--accent-soft); }
+.abody { padding: 18px 22px 8px; }
+.prose { font-size: 16.5px; line-height: 1.75; color: var(--text-2); }
+.prose p { margin: 0 0 14px; }
+.prose ul, .prose ol { margin: 0 0 14px; padding-left: 22px; }
+.prose li { margin: 4px 0; }
+.prose li::marker { color: var(--accent); }
+.prose strong { color: var(--text); font-weight: 650; }
+.cite { display: inline-flex; align-items: center; border: 1px solid var(--accent-line); background: var(--accent-soft); color: var(--accent); border-radius: 999px;
+  padding: 0 8px; margin: 0 1px; font: 650 12.5px/1.6 var(--sans); vertical-align: 1px; white-space: nowrap; transition: background .15s, color .15s; }
+.cite:hover { background: var(--accent); color: var(--accent-fg); }
+.sources { padding: 14px 18px 18px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--surface-2) 45%, transparent); }
+.sources .kicker { margin-bottom: 10px; }
+.sgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.source { display: flex; gap: 12px; align-items: flex-start; text-align: left; border: 1px solid var(--border); background: var(--surface); border-radius: 14px; padding: 10px 12px;
+  transition: border-color .15s, transform .15s, box-shadow .15s; }
+.source:hover { border-color: var(--accent-line); transform: translateY(-1px); box-shadow: var(--shadow); }
+.source .num { font-weight: 750; font-size: 18px; color: var(--accent); line-height: 1.2; font-variant-numeric: tabular-nums; min-width: 34px; }
+.source span:last-child { min-width: 0; }
+.source small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.source em { display: block; font-style: normal; font-weight: 600; font-size: 13.5px; }
+.answer.error { border-color: color-mix(in srgb, var(--error) 35%, transparent); }
+.answer.error .abadge { color: var(--error); background: var(--error-soft); }
+.answer.error .prose { color: var(--error); }
 
-h2.section { font-size: 14px; margin: 24px 0 10px; font-weight: 600; }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
-.num { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--sunken); border: 1px solid var(--border); font-size: 13px; font-weight: 600; }
-.calls { display: grid; gap: 8px; }
-.call { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 15px; overflow-wrap: anywhere; }
-.call.bad { border-color: var(--error); background: var(--error-soft); }
-.tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 1px 6px; margin-right: 6px; }
-.call.bad .tag { color: var(--error); background: transparent; border: 1px solid var(--error); }
-.hits { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 14px; }
-details { margin-top: 6px; font-size: 14px; }
-summary { cursor: pointer; color: var(--muted); }
-.thought { color: var(--muted); font-style: italic; margin: 0 0 4px; }
+/* loading */
+.spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--accent-line); border-top-color: var(--accent); animation: turn .8s linear infinite; }
+.sk { display: block; height: 12px; border-radius: 6px; margin: 4px 0 14px; background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+@keyframes turn { to { transform: rotate(360deg); } }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 
-.article { padding: 16px; }
-.article-head { display: flex; justify-content: space-between; gap: 8px; }
-.article h2 { font-size: 16px; margin: 2px 0 10px; }
-.article p { margin: 0 0 8px; font-size: 15px; }
-.icon { border: 0; background: var(--sunken); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 18px; line-height: 1; flex: none; }
-.runs { padding: 16px; }
-.runs h2 { margin-top: 0; }
-.runs ul { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
-.run { width: 100%; text-align: left; border: 1px solid transparent; background: none; border-radius: 8px; padding: 6px 8px; cursor: pointer; font-size: 14px; }
-.run:hover { background: var(--sunken); border-color: var(--border); }
-.foot { padding-bottom: 24px; }
+/* trace */
+.trace { margin-top: 18px; border: 1px solid var(--border); border-radius: 18px; background: color-mix(in srgb, var(--surface) 60%, transparent); }
+.trace > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 13px 16px; cursor: pointer; font-weight: 600; font-size: 14.5px; }
+.trace > summary::-webkit-details-marker { display: none; }
+.trace > summary .count { margin-left: auto; }
+.chev { transition: transform .2s; color: var(--muted); }
+.trace[open] .chev { transform: rotate(180deg); }
+.timeline { list-style: none; margin: 0; padding: 4px 16px 16px; }
+.titem { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; padding-bottom: 12px; animation: rise .3s ease both; }
+.titem::before { content: ""; position: absolute; left: 15px; top: 34px; bottom: 0; width: 2px; background: var(--border); border-radius: 2px; }
+.titem:last-child::before { display: none; }
+.tdot { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; color: var(--accent); background: var(--surface); border: 1px solid var(--border); }
+.tdot .ic { width: 16px; height: 16px; }
+.titem.bad .tdot { color: var(--error); border-color: color-mix(in srgb, var(--error) 35%, transparent); }
+.tcard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px 12px; min-width: 0; }
+.titem.bad .tcard { background: var(--error-soft); border-color: color-mix(in srgb, var(--error) 30%, transparent); }
+.thead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ttitle { font-weight: 600; font-size: 14.5px; overflow-wrap: anywhere; }
+.tstep { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.q { font-weight: 500; color: var(--text-2); }
+.tnote { margin: 4px 0 0; font-size: 13.5px; color: var(--muted); overflow-wrap: anywhere; }
+.titem.bad .tnote { color: var(--error); }
+.thought { margin: 0 0 6px; font-size: 13.5px; color: var(--muted); font-style: italic; }
+.hits { display: grid; gap: 2px; margin-top: 8px; }
+.hit { display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left; border: 0; background: none; border-radius: 9px; padding: 5px 6px; font-size: 14px; color: var(--text-2); line-height: 1.45; }
+.hit:hover { background: var(--surface-2); color: var(--text); }
+.hit .pill { flex: none; margin-top: 1px; }
+.more { margin-top: 6px; }
+.more summary { font-size: 13px; color: var(--muted); cursor: pointer; width: fit-content; }
+.more summary:hover { color: var(--accent); }
+.excerpt { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 14px; line-height: 1.65; color: var(--text-2); }
+.excerpt p { margin: 0 0 8px; }
+.excerpt p:last-child { margin: 0; }
+.pending .tdot { border-style: dashed; }
+.pending .tcard { border-style: dashed; color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 10px; }
+code { font-size: 12.5px; overflow-wrap: anywhere; }
 
-@media (max-width: 860px) {
-  .layout { grid-template-columns: minmax(0, 1fr); }
-  aside { position: static; max-height: none; }
-  .article { position: fixed; left: 0; right: 0; bottom: 0; max-height: 70vh; overflow: auto; border-radius: 14px 14px 0 0; z-index: 10; box-shadow: 0 -8px 30px rgba(0,0,0,.18); }
+/* drawer */
+.backdrop { position: fixed; inset: 0; z-index: 30; background: rgba(10, 10, 8, .32); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; transition: opacity .25s; }
+.backdrop.open { opacity: 1; pointer-events: auto; }
+.drawer { position: fixed; z-index: 40; top: 0; right: 0; height: 100%; width: min(480px, 100%); background: var(--surface); border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg); display: flex; flex-direction: column; transform: translateX(104%); visibility: hidden;
+  transition: transform .32s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .32s; }
+.drawer.open { transform: none; visibility: visible; transition: transform .32s cubic-bezier(.2, .8, .2, 1), visibility 0s; }
+.dhead { display: flex; align-items: flex-start; gap: 12px; padding: 18px 18px 14px 22px; border-bottom: 1px solid var(--border); }
+.dhead > div { flex: 1; min-width: 0; }
+.dhead .pill { font-size: 13px; padding: 3px 10px; }
+.dhead h3 { margin: 10px 0 4px; font-size: 19px; line-height: 1.35; letter-spacing: -.015em; }
+.dhead small { display: block; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.close { width: 36px; height: 36px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; flex: none; color: var(--text-2); }
+.close:hover { background: var(--surface-2); }
+.dbody { padding: 18px 22px 28px; overflow: auto; font-size: 16px; line-height: 1.8; color: var(--text-2); }
+.dbody p { margin: 0 0 14px; }
+.dfoot { margin-top: auto; padding: 12px 22px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--muted); }
+.handle { display: none; }
+
+footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 8px 16px 32px; }
+
+@media (max-width: 640px) {
+  .hero { padding-top: 16px; }
+  .hint { display: none; }
+  .cbar { justify-content: flex-end; margin-top: 0; }
+  .brand small { max-width: 52vw; }
+  .ghost span { display: none; }
+  .abody { padding: 16px 18px 6px; }
+  .drawer { top: auto; bottom: 0; width: 100%; height: 84vh; border-left: 0; border-top: 1px solid var(--border); border-radius: 22px 22px 0 0; transform: translateY(104%); }
+  .handle { display: block; width: 40px; height: 4px; border-radius: 4px; background: var(--border-2); margin: 10px auto 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="wrap brand">
-    <span class="mark" aria-hidden="true">§</span>
-    <div><h1>Mehnat kodeksi agenti</h1><p id="law" class="muted">&nbsp;</p></div>
+  <div class="top-in">
+    <button class="brand" id="home" type="button" aria-label="Bosh sahifa">
+      <span class="mark" aria-hidden="true">§</span>
+      <span><b>Mehnat kodeksi agenti</b><small id="law">Oʻzbekiston Respublikasining Mehnat kodeksi</small></span>
+    </button>
+    <button class="ghost" id="new" type="button" hidden data-icon="plus"><span>Yangi savol</span></button>
   </div>
 </header>
 
-<div class="wrap layout">
-  <main>
-    <form id="ask" class="card">
-      <label for="q" class="sr-only">Savol</label>
-      <textarea id="q" rows="2" placeholder="Savolingizni yozing, masalan: Normal ish haftasi necha soat?"></textarea>
-      <div class="row">
-        <div id="examples" class="chips"></div>
-        <button id="go" class="primary" type="submit">Soʻrash</button>
-      </div>
-    </form>
+<main>
+  <section class="hero" id="hero">
+    <span class="eyebrow"><span class="dot"></span><span id="facts">Manbali javoblar</span></span>
+    <h1>Mehnat kodeksi boʻyicha <span class="grad">savol bering</span></h1>
+    <p>Agent kodeksni qidiradi, kerakli moddalarni oʻqiydi va har bir daʼvo uchun manbani koʻrsatadi.</p>
+  </section>
 
-    <section id="empty" class="empty muted">
-      <p>Agent savolingizga Mehnat kodeksini qidirib, kerakli moddalarni oʻqib javob beradi va har bir daʼvo uchun
-      moddani koʻrsatadi. Modda raqamini bossangiz, uning toʻliq matni ochiladi.</p>
-    </section>
+  <form class="composer" id="ask">
+    <label for="q" class="sr-only">Savol</label>
+    <textarea id="q" rows="2" maxlength="500" placeholder="Masalan: Yillik mehnat taʼtili kamida necha kun?"></textarea>
+    <div class="cbar">
+      <span class="hint"><kbd>Enter</kbd> yuborish · <kbd>Shift</kbd>+<kbd>Enter</kbd> yangi qator</span>
+      <button class="send" id="go" type="submit" aria-label="Soʻrash"></button>
+    </div>
+  </form>
+  <div class="chips" id="examples"></div>
 
-    <section id="result" hidden>
-      <div class="qline"><span class="label">Savol</span><span id="badge" class="badge" hidden>yozib olingan</span></div>
-      <p id="question" class="question"></p>
-      <article id="answer" class="card answer" aria-live="polite"></article>
-      <h2 class="section">Agent qadamlari <span id="status" class="muted"></span></h2>
-      <ol id="steps" class="steps"></ol>
-    </section>
-  </main>
+  <section class="samples" id="samples">
+    <p class="kicker" data-icon="clock">Namunalar · kalitsiz va internetsiz</p>
+    <div class="grid" id="runs"></div>
+  </section>
 
-  <aside>
-    <section id="article" class="card article" hidden aria-live="polite">
-      <div class="article-head">
-        <div><p id="art-chapter" class="muted small"></p></div>
-        <button id="art-close" class="icon" type="button" aria-label="Yopish">×</button>
-      </div>
-      <h2 id="art-title"></h2>
-      <div id="art-text"></div>
-    </section>
-    <section class="card runs">
-      <h2 class="section">Yozib olingan savollar</h2>
-      <p class="muted small" style="margin:0">Kalitsiz va internetsiz koʻrsatiladi.</p>
-      <ul id="runs"></ul>
-    </section>
-  </aside>
-</div>
-<p class="wrap foot muted small">Bu huquqiy maslahat emas. Rasmiy manba: lex.uz.</p>
+  <section id="result" hidden>
+    <div class="qhead">
+      <p class="kicker">Savol <span id="badge" class="badge" hidden>yozib olingan</span></p>
+      <h2 id="question"></h2>
+    </div>
+    <article id="answer" class="answer" aria-live="polite"></article>
+    <details class="trace" id="trace" open>
+      <summary>Agent qanday ishladi <span class="pill count" id="count">0</span><span data-icon="chevron" class="chev"></span></summary>
+      <ol class="timeline" id="steps"></ol>
+    </details>
+  </section>
+</main>
+<footer>Bu huquqiy maslahat emas. Savollar javob olish uchun Google Gemini'ga yuboriladi: shaxsiy maʼlumot yozmang. Rasmiy manba: lex.uz.</footer>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="art-title" aria-hidden="true">
+  <span class="handle" aria-hidden="true"></span>
+  <div class="dhead">
+    <div><span class="pill" id="art-num"></span><h3 id="art-title"></h3><small id="art-chapter"></small></div>
+    <button class="close" id="art-close" type="button" aria-label="Yopish" data-icon="x"></button>
+  </div>
+  <div class="dbody" id="art-text"></div>
+  <div class="dfoot">Matn lex.uz dagi 2026-yil iyul holatidagi nashrdan. Rasmiy manba — lex.uz.</div>
+</aside>
 
 <script>
 const $ = id => document.getElementById(id);
-const EXAMPLES = ["Normal ish haftasi necha soat?", "Yillik mehnat taʼtili kamida necha kun?",
-                  "18 yoshgacha boʻlganlar uchun ish vaqti qancha?", "Sinov muddati qancha boʻlishi mumkin?"];
+const ICONS = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>',
+  up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  spark: '<path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/>',
+};
+const icon = name => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 const ART = "(\\d+(?:\\.\\d+)?)";
+const EXAMPLES = ["Normal ish haftasi necha soat?", "Yillik mehnat taʼtili kamida necha kun?",
+                  "Sinov muddati qancha boʻlishi mumkin?", "Tungi ish deb qaysi vaqt hisoblanadi?"];
+
+let titles = {}, started = 0, lastAnswer = null, lastTrigger = null;
 
 function inline(s) {
   return esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-               .replace(new RegExp(`\\[${ART}-modda\\]`, "g"), '<span class="nowrap">[<button class="cite" type="button" data-article="$1">$1-modda</button>]</span>');
+               .replace(new RegExp(`\\[${ART}-modda\\]`, "g"), '<button class="cite" type="button" data-article="$1" aria-label="$1-modda">$1-modda</button>');
 }
 
-function md(text) {                       // paragraphs, "- " lists, **bold**, [182-modda]
-  let html = "", para = [], list = [];
+function md(text) {                       // paragraphs, "- " and "1." lists, **bold**, [182-modda]
+  let html = "", para = [], list = [], kind = "ul";
   const flushPara = () => { if (para.length) html += `<p>${para.map(inline).join("<br>")}</p>`; para = []; };
-  const flushList = () => { if (list.length) html += `<ul>${list.map(l => `<li>${inline(l)}</li>`).join("")}</ul>`; list = []; };
+  const flushList = () => { if (list.length) html += `<${kind}>${list.map(l => `<li>${inline(l)}</li>`).join("")}</${kind}>`; list = []; };
   for (const line of String(text).split("\n")) {
-    const item = line.match(/^\s*[-*•]\s+(.*)/);
+    const item = line.match(/^\s*(?:[-*•]|(\d+)[.)])\s+(.*)/);
     if (!line.trim()) { flushPara(); flushList(); }
-    else if (item) { flushPara(); list.push(item[1]); }
+    else if (item) {
+      const k = item[1] ? "ol" : "ul";
+      if (list.length && k !== kind) flushList();
+      flushPara(); kind = k; list.push(item[2]);
+    }
     else { flushList(); para.push(line); }
   }
   flushPara(); flushList();
@@ -176,81 +327,139 @@ function md(text) {                       // paragraphs, "- " lists, **bold**, [
 }
 
 const paras = text => String(text).split("\n").filter(p => p.trim()).map(p => `<p>${esc(p)}</p>`).join("");
-const articleLink = id => `<button class="link" type="button" data-article="${esc(id)}">${esc(id)}-modda</button>`;
+const seconds = ms => (ms / 1000).toFixed(1).replace(".", ",") + " s";
 
-function callHTML(call, result) {
+function learnTitles(step) {              // article titles seen in search hits and fetched articles
+  step.results.forEach(r => r.content.split("\n").forEach(line => {
+    const m = line.match(new RegExp(`^${ART}-modda[:.] (.*)$`));
+    if (m) titles[m[1]] = m[2];
+  }));
+}
+
+function item(kind, title, body, step, bad) {
+  const li = document.createElement("li");
+  li.className = "titem" + (bad ? " bad" : "");
+  li.innerHTML = `<span class="tdot">${icon(kind)}</span><div class="tcard"><div class="thead"><span class="ttitle">${title}</span>` +
+                 `<span class="tstep">${step}-qadam</span></div>${body}</div>`;
+  return li;
+}
+
+function callItem(call, result, step) {
   const content = result ? result.content : "";
-  const bad = content.startsWith("error:") ? " bad" : "";
   const args = call.args || {};
-  if (call.name === "search" && !bad) {
+  if (content.startsWith("error:")) {
+    const what = {search: "Qidiruv rad etildi", fetch_article: "Modda topilmadi", answer: "Javob qaytarildi"}[call.name] || `Nomaʼlum vosita: ${esc(call.name)}`;
+    return item("alert", what, `<p class="tnote">${esc(content.replace(/^error:\s*/, ""))}</p>` +
+                `<details class="more"><summary>Chaqiruv</summary><div class="excerpt"><code>${esc(JSON.stringify(args))}</code></div></details>`, step, true);
+  }
+  if (call.name === "search") {
     const hits = content.split("\n").map(l => l.match(new RegExp(`^${ART}-modda: (.*)$`))).filter(Boolean);
-    return `<div class="call"><span class="tag">Qidiruv</span>«${esc(args.query)}»` + (hits.length
-      ? `<ul class="hits">${hits.map(h => `<li>${articleLink(h[1])} ${esc(h[2])}</li>`).join("")}</ul>`
-      : `<p class="muted small" style="margin:6px 0 0">${esc(content)}</p>`) + `</div>`;
+    return item("search", `Qidiruv <span class="q">«${esc(args.query)}»</span>`, hits.length
+      ? `<div class="hits">${hits.map(h => `<button class="hit" type="button" data-article="${h[1]}"><span class="pill">${h[1]}</span><span>${esc(h[2])}</span></button>`).join("")}</div>`
+      : `<p class="tnote">${esc(content)}</p>`, step);
   }
-  if (call.name === "fetch_article" && !bad) {
+  if (call.name === "fetch_article") {
     const [first, ...rest] = content.split("\n");
-    const m = first.match(new RegExp(`^${ART}-modda\\. (.*)$`)) || [null, args.article, first];
-    return `<div class="call"><span class="tag">Oʻqildi</span>${articleLink(m[1])} ${esc(m[2])}` +
-           `<details><summary>Matn</summary>${paras(rest.join("\n"))}</details></div>`;
+    const m = first.match(new RegExp(`^${ART}-modda\\. (.*)$`)) || [null, String(args.article), first];
+    return item("file", "Modda oʻqildi", `<div class="hits"><button class="hit" type="button" data-article="${esc(m[1])}"><span class="pill">${esc(m[1])}</span><span>${esc(m[2])}</span></button></div>` +
+                `<details class="more"><summary>Matnni koʻrsatish</summary><div class="excerpt">${paras(rest.join("\n"))}</div></details>`, step);
   }
-  if (call.name === "answer" && !bad) return `<div class="call"><span class="tag">Javob</span>qabul qilindi</div>`;
-  const name = {search: "Qidiruv", fetch_article: "Oʻqish", answer: "Javob"}[call.name] || call.name;
-  return `<div class="call bad"><span class="tag">${esc(name)}</span>${esc(content.replace(/^error:\s*/, ""))}` +
-         `<details><summary>Chaqiruv</summary><code>${esc(JSON.stringify(args))}</code></details></div>`;
+  if (call.name === "answer") return item("check", "Javob tayyor", `<p class="tnote">Har bir iqtibos mavjud va shu ishda oʻqilgan modda ekani tekshirildi.</p>`, step);
+  return item("alert", esc(call.name), `<p class="tnote">${esc(content)}</p>`, step, true);
+}
+
+function describe(step) {
+  const c = step.calls[step.calls.length - 1];
+  if (!c) return `${step.step}-qadam`;
+  if (c.name === "search") return `${step.step}-qadam · «${c.args?.query ?? ""}» qidirildi`;
+  if (c.name === "fetch_article") return `${step.step}-qadam · ${step.calls.filter(x => x.name === "fetch_article").map(x => String(x.args?.article ?? "").replace(/-modda$/, "")).join(", ")}-modda oʻqildi`;
+  return `${step.step}-qadam · javob yozilmoqda`;
+}
+
+function pending(on) {
+  $("pending")?.remove();
+  if (!on) return;
+  const li = document.createElement("li");
+  li.className = "titem pending"; li.id = "pending";
+  li.innerHTML = `<span class="tdot"><span class="spin"></span></span><div class="tcard">Keyingi qadam…</div>`;
+  $("steps").append(li);
 }
 
 function addStep(step) {
-  const li = document.createElement("li");
-  li.className = "step";
-  li.innerHTML = `<span class="num" aria-label="${step.step}-qadam">${step.step}</span><div class="calls">` +
-    (step.text ? `<p class="thought">${esc(step.text)}</p>` : "") +
-    (step.calls.length ? step.calls.map((c, i) => callHTML(c, step.results[i])).join("")
-                       : `<div class="call bad"><span class="tag">Chaqiruv yoʻq</span>Model vosita chaqirmadi.</div>`) +
-    `</div>`;
-  $("steps").append(li);
-  $("status").textContent = `· ${step.step}-qadam`;
+  learnTitles(step);
+  pending(false);
+  if (step.text) {
+    const li = item("spark", "Model yozdi", `<p class="tnote">${esc(step.text)}</p>`, step.step);
+    $("steps").append(li);
+  }
+  if (!step.calls.length) $("steps").append(item("alert", "Vosita chaqirilmadi", `<p class="tnote">Model bu qadamda hech qaysi vositani chaqirmadi.</p>`, step.step, true));
+  step.calls.forEach((c, i) => $("steps").append(callItem(c, step.results[i], step.step)));
+  $("count").textContent = step.step;
+  const live = $("live");
+  if (live) live.textContent = describe(step);
+}
+
+function showView(result) {
+  $("hero").hidden = result;
+  $("samples").hidden = result;
+  $("examples").hidden = result;
+  $("result").hidden = !result;
+  $("new").hidden = !result;
 }
 
 function start(question, recorded) {
-  $("empty").hidden = true;
-  $("result").hidden = false;
+  showView(true);
+  titles = {}; lastAnswer = null; started = performance.now();
   $("question").textContent = question;
   $("badge").hidden = !recorded;
   $("steps").innerHTML = "";
-  $("status").textContent = "";
-  $("answer").className = "card answer waiting";
-  $("answer").innerHTML = `<span class="spinner" aria-hidden="true"></span>Agent qonunni oʻqiyapti…`;
+  $("count").textContent = "0";
+  $("trace").open = true;
+  $("answer").className = "answer";
+  $("answer").innerHTML = `<div class="ahead"><span class="abadge"><span class="spin"></span></span><div><b>Agent qonunni oʻqiyapti</b>` +
+    `<span class="ameta" id="live">Savol tahlil qilinmoqda…</span></div></div>` +
+    `<div class="abody"><span class="sk" style="width:94%"></span><span class="sk" style="width:86%"></span><span class="sk" style="width:58%"></span></div>`;
+  window.scrollTo({top: 0, behavior: "smooth"});
 }
 
-function showAnswer(a, steps) {
+function showAnswer(a, steps, meta) {
   const box = $("answer");
-  box.className = "card answer";
-  if (!a) { box.innerHTML = `<p>Agent ${steps} qadam ichida javobga yetib bormadi.</p>`; return; }
-  box.innerHTML = md(a.answer) + (a.citations.length
-    ? `<div class="cites"><span class="muted small">Manbalar:</span>${a.citations.map(c => `<button class="chip" type="button" data-article="${esc(c)}">${esc(c)}-modda</button>`).join("")}</div>`
+  box.className = "answer";
+  if (!a) {
+    box.classList.add("error");
+    box.innerHTML = `<div class="ahead"><span class="abadge">${icon("alert")}</span><div><b>Javob topilmadi</b><span class="ameta">${esc(meta)}</span></div></div>` +
+                    `<div class="abody prose"><p>Agent ${steps} qadam ichida javobga yetib bormadi. Savolni boshqacha soʻrab koʻring.</p></div>`;
+    return;
+  }
+  lastAnswer = a;
+  box.innerHTML = `<div class="ahead"><span class="abadge">${icon("spark")}</span><div><b>Javob</b><span class="ameta">${esc(meta)}</span></div>` +
+    `<button class="ghost sm" id="copy" type="button">${icon("copy")}<span>Nusxa</span></button></div>` +
+    `<div class="abody prose">${md(a.answer)}</div>` + (a.citations.length
+    ? `<div class="sources"><p class="kicker">${icon("book")}Manbalar</p><div class="sgrid">${a.citations.map(c =>
+        `<button class="source" type="button" data-article="${esc(c)}"><span class="num">${esc(c)}</span><span><em>${esc(c)}-modda</em><small>${esc(titles[c] || "")}</small></span></button>`).join("")}</div></div>`
     : "");
 }
 
 function showError(message) {
-  $("answer").className = "card answer error";
-  $("answer").innerHTML = `<p><strong>Xato.</strong> ${esc(message)}</p>`;
+  $("answer").className = "answer error";
+  $("answer").innerHTML = `<div class="ahead"><span class="abadge">${icon("alert")}</span><div><b>Xato</b><span class="ameta">Agent ishini tugata olmadi</span></div></div>` +
+                          `<div class="abody prose"><p>${esc(message)}</p></div>`;
 }
 
 function busy(on) {
   $("go").disabled = on;
-  $("go").textContent = on ? "Ishlayapti…" : "Soʻrash";
+  $("go").innerHTML = on ? `<span class="spin"></span>` : icon("up");
 }
 
 async function ask(question) {
   history.replaceState(null, "", location.pathname);
   start(question, false);
   busy(true);
+  pending(true);
   let steps = 0, finished = false;
   try {
-    const res = await fetch("/api/ask", {method: "POST", headers: {"Content-Type": "application/json"},
-                                         body: JSON.stringify({question})});
-    if (!res.ok) throw new Error((await res.json()).error || res.statusText);
+    const res = await fetch("/api/ask", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({question})});
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
     const reader = res.body.getReader(), decoder = new TextDecoder();
     let buffer = "";
     for (;;) {
@@ -262,17 +471,17 @@ async function ask(question) {
         const line = buffer.slice(0, i); buffer = buffer.slice(i + 1);
         if (!line.trim()) continue;
         const ev = JSON.parse(line);
-        if (ev.type === "step") { steps = ev.step.step; addStep(ev.step); }
-        else if (ev.type === "answer") { finished = true; showAnswer(ev.answer, steps); }
-        else if (ev.type === "error") { finished = true; showError(ev.error); }
+        if (ev.type === "step") { steps = ev.step.step; addStep(ev.step); pending(true); }
+        else if (ev.type === "answer") { finished = true; pending(false); showAnswer(ev.answer, steps, `${steps} qadam · ${seconds(performance.now() - started)}`); }
+        else if (ev.type === "error") { finished = true; pending(false); showError(ev.error); }
       }
     }
     if (!finished) showError("Server javobni oxirigacha yubormadi.");
   } catch (e) {
     showError(e.message);
   } finally {
+    pending(false);
     busy(false);
-    $("status").textContent = steps ? `· ${steps} qadam` : "";
   }
 }
 
@@ -283,46 +492,84 @@ async function showRun(name) {             // a recorded run; #run=NAME links to
   history.replaceState(null, "", "#run=" + encodeURIComponent(name));
   start(t.question, true);
   t.trace.forEach(addStep);
-  showAnswer(t.answer, t.trace.length);
-  $("status").textContent = `· ${t.trace.length} qadam · ${t.model}`;
+  showAnswer(t.answer, t.trace.length, `${t.trace.length} qadam · ${t.model}`);
 }
 
-async function openArticle(id) {
+async function openArticle(id, trigger) {
   const res = await fetch("/api/article/" + encodeURIComponent(id));
   if (!res.ok) return;
   const a = await res.json();
+  lastTrigger = trigger || document.activeElement;
+  $("art-num").textContent = a.article_display;
+  $("art-title").textContent = a.title;
   $("art-chapter").textContent = a.chapter;
-  $("art-title").textContent = `${a.article_display}. ${a.title}`;
   $("art-text").innerHTML = paras(a.text);
-  $("article").hidden = false;
-  $("article").scrollTop = 0;
+  $("art-text").scrollTop = 0;
+  $("drawer").classList.add("open"); $("drawer").setAttribute("aria-hidden", "false");
+  $("backdrop").classList.add("open");
+  document.documentElement.classList.add("locked");
   $("art-close").focus({preventScroll: true});
 }
 
+function closeArticle() {
+  if (!$("drawer").classList.contains("open")) return;
+  $("drawer").classList.remove("open"); $("drawer").setAttribute("aria-hidden", "true");
+  $("backdrop").classList.remove("open");
+  document.documentElement.classList.remove("locked");
+  lastTrigger?.focus?.({preventScroll: true});
+}
+
+function goHome() {
+  history.replaceState(null, "", location.pathname);
+  closeArticle();
+  showView(false);
+  $("q").value = ""; grow();
+  $("q").focus();
+}
+
+function grow() { const q = $("q"); q.style.height = "auto"; q.style.height = Math.min(q.scrollHeight, 220) + "px"; }
+
 document.addEventListener("click", e => {
   const art = e.target.closest("[data-article]");
-  if (art) return openArticle(art.dataset.article);
+  if (art) return openArticle(art.dataset.article, art);
   const run = e.target.closest("[data-run]");
   if (run) return showRun(run.dataset.run);
   const ex = e.target.closest("[data-example]");
-  if (ex && !$("go").disabled) { $("q").value = ex.dataset.example; ask(ex.dataset.example); }
+  if (ex && !$("go").disabled) { $("q").value = ex.dataset.example; grow(); return ask(ex.dataset.example); }
+  if (e.target.closest("#copy") && lastAnswer) {
+    const text = lastAnswer.answer + (lastAnswer.citations.length ? `\n\nManbalar: ${lastAnswer.citations.map(c => c + "-modda").join(", ")}` : "");
+    navigator.clipboard?.writeText(text).then(() => {
+      const b = $("copy"); b.innerHTML = `${icon("check")}<span>Nusxa olindi</span>`;
+      setTimeout(() => { if ($("copy")) $("copy").innerHTML = `${icon("copy")}<span>Nusxa</span>`; }, 1600);
+    });
+  }
 });
-$("art-close").addEventListener("click", () => { $("article").hidden = true; });
-document.addEventListener("keydown", e => { if (e.key === "Escape") $("article").hidden = true; });
+$("backdrop").addEventListener("click", closeArticle);
+$("art-close").addEventListener("click", closeArticle);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeArticle(); });
+$("home").addEventListener("click", goHome);
+$("new").addEventListener("click", goHome);
 $("ask").addEventListener("submit", e => {
   e.preventDefault();
   const q = $("q").value.trim();
   if (q && !$("go").disabled) ask(q);
 });
+$("q").addEventListener("input", grow);
 $("q").addEventListener("keydown", e => {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("ask").requestSubmit(); }
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("ask").requestSubmit(); }
 });
 
+document.querySelectorAll("[data-icon]").forEach(el => el.insertAdjacentHTML("afterbegin", icon(el.dataset.icon)));
+busy(false);
 $("examples").innerHTML = EXAMPLES.map(q => `<button class="chip" type="button" data-example="${esc(q)}">${esc(q)}</button>`).join("");
-fetch("/api/law").then(r => r.json()).then(l => { $("law").textContent = `${l.title} · ${l.articles} modda`; });
+fetch("/api/law").then(r => r.json()).then(l => {
+  $("law").textContent = `${l.title} · ${l.articles} modda`;
+  $("facts").textContent = `${l.articles} modda · har bir javob manbali`;
+});
 fetch("/api/runs").then(r => r.json()).then(runs => {
-  $("runs").innerHTML = runs.map(r => `<li><button class="run" type="button" data-run="${esc(r.name)}">${esc(r.question)}</button></li>`).join("")
-    || `<li class="muted small">Hali yoʻq.</li>`;
+  $("runs").innerHTML = runs.map(r => `<button class="sample" type="button" data-run="${esc(r.name)}"><b>${esc(r.question)}</b>` +
+    `<span class="meta"><span class="tag">${r.steps ?? "?"} qadam</span>${(r.citations || []).map(c => `<span class="pill">${esc(c)}</span>`).join("")}</span></button>`).join("");
+  $("samples").hidden = !runs.length || !$("result").hidden;
 });
 if (location.hash.startsWith("#run=")) showRun(decodeURIComponent(location.hash.slice(5)));
 </script>

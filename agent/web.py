@@ -56,8 +56,12 @@ def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8):
             elif path == "/api/law":
                 self.send_json({"title": law.title, "articles": len(law.articles)})
             elif path == "/api/runs":
-                self.send_json([{"name": n, "question": json.loads(p.read_text(encoding="utf-8"))["question"]}
-                                for n, p in runs.items()])
+                listed = []
+                for name, p in runs.items():
+                    t = json.loads(p.read_text(encoding="utf-8"))
+                    listed.append({"name": name, "question": t["question"], "steps": len(t["trace"]),
+                                   "citations": (t["answer"] or {}).get("citations", [])})
+                self.send_json(listed)
             elif path.startswith("/api/runs/") and path[len("/api/runs/"):] in runs:
                 t = json.loads(runs[path[len("/api/runs/"):]].read_text(encoding="utf-8"))
                 self.send_json({k: t[k] for k in ("model", "question", "answer", "trace")})
