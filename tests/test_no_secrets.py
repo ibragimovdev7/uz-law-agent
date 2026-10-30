@@ -9,6 +9,7 @@ PATTERNS = {
     "Google API key": re.compile(r"AIza[0-9A-Za-z_\-]{35}"),
     "Google API key (AQ.)": re.compile(r"\bAQ\.[0-9A-Za-z_\-]{30,}"),
     "GEMINI_API_KEY with a value": re.compile(r"GEMINI_API_KEY[ \t]*=[ \t]*['\"]?[0-9A-Za-z_.\-]{20,}"),
+    "WEB_PASSWORD with a value": re.compile(r"WEB_PASSWORD[ \t]*=[ \t]*['\"]?\S{12,}"),
 }
 
 
@@ -34,6 +35,7 @@ class NoSecrets(unittest.TestCase):
         self.assertTrue(findings("x", "key = 'AIza" + "B" * 35 + "'"))
         self.assertTrue(findings("x", "key = 'AQ." + "Ab-9" * 10 + "'"))
         self.assertTrue(findings("x", "GEMINI_API_KEY=AQ." + "Ab-9" * 10))
+        self.assertTrue(findings("x", "WEB_PASSWORD=" + "x7_K" * 4))
         self.assertEqual(findings(".env.example", (ROOT / ".env.example").read_text()), [])
 
     def test_env_is_ignored(self):

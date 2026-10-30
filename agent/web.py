@@ -1,49 +1,113 @@
-"""A web page for the agent, served on this computer only.
+"""A web page for the agent.
 
-    python3 -m agent.web               # then open http://127.0.0.1:8765
+    python3 -m agent.web                            # then open http://127.0.0.1:8765
     python3 -m agent.web --port 8080
+    python3 -m agent.web --public                   # behind a tunnel such as ngrok: visitors give WEB_PASSWORD
+    python3 -m agent.web --public --no-password     # open to everyone, within the limits below
 
 POST /api/ask {"question"} runs the agent and streams the run as JSON lines, one per step and then the answer, so
 the page shows each step as it happens. GET /api/runs lists the recorded runs and GET /api/runs/NAME is one of them
 (offline, no key); GET /api/article/182 is an article; GET /api/law names the law. Only the standard library.
 
-The key stays on this computer: the server listens on 127.0.0.1 only, answers only requests addressed to it by that
-name (against DNS rebinding), and takes questions only as application/json, which a page from another site cannot
+The key stays on this computer and the server listens on 127.0.0.1 only. By default it answers only requests
+addressed to it by that name (against DNS rebinding). With --public it may be reached by any name, so that a tunnel
+can forward to it. Every question is paid from the key's quota, so a public server asks for the password (HTTP Basic
+auth, any user name) unless told --no-password, and always limits the questions: so many per visitor an hour, so
+many in all a day, so many at once. Questions come only as application/json, which a page from another site cannot
 send here without the browser asking first.
 """
 import argparse
+import base64
+import hmac
 import json
+import os
+import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 from agent.corpus import LABOR_CODE, Law
-from agent.llm import TRACES, Gemini
+from agent.llm import TRACES, Gemini, load_env
 from agent.loop import run
 
 PAGE = Path(__file__).with_name("web.html")
+MAX_QUESTION = 500                   # characters
 
 
-def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8):
-    """The server on 127.0.0.1 (port 0 picks a free one). `model()` makes the model for each question."""
+class Limits:
+    """How many questions a public server takes: per visitor in an hour, in all in a day (UTC), and at once."""
+
+    def __init__(self, per_hour=10, per_day=200, at_once=2):
+        self.per_hour, self.per_day = per_hour, per_day
+        self.slots = threading.BoundedSemaphore(at_once)
+        self.lock = threading.Lock()
+        self.asked, self.day, self.today = {}, None, 0      # visitor -> times of their questions this past hour
+
+    def admit(self, visitor, now=None):
+        """None if the question may run, else why not."""
+        now = time.time() if now is None else now
+        with self.lock:
+            day = time.strftime("%Y-%m-%d", time.gmtime(now))
+            if day != self.day:
+                self.day, self.today = day, 0
+            if self.today >= self.per_day:
+                return "Bugungi savollar chegarasi tugadi. Ertaga qayta urinib koʻring."
+            recent = [t for t in self.asked.get(visitor, []) if now - t < 3600]
+            if len(recent) >= self.per_hour:
+                return f"Bir soatda {self.per_hour} tadan ortiq savol berib boʻlmaydi. Birozdan soʻng urinib koʻring."
+            if len(self.asked) > 1000:                       # forget visitors who have not asked for an hour
+                self.asked = {v: ts for v, ts in self.asked.items() if ts and now - ts[-1] < 3600}
+            self.asked[visitor] = recent + [now]
+            self.today += 1
+        return None
+
+
+def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8, public=False, password=None,
+                limits=None):
+    """The server on 127.0.0.1 (port 0 picks a free one). `model()` makes the model for each question. A public
+    server accepts any host name; with a password every request must give it; with limits (a Limits) the questions
+    are counted."""
     law = law or Law(LABOR_CODE)
 
     class Handler(BaseHTTPRequestHandler):
-        def send_json(self, obj, status=200):
+        def send_json(self, obj, status=200, headers=()):
             body = json.dumps(obj, ensure_ascii=False).encode()
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
+            for k, v in headers:
+                self.send_header(k, v)
             self.end_headers()
             self.wfile.write(body)
 
-        def addressed_to_us(self):
+        def allowed(self):
+            if password:
+                kind, _, value = self.headers.get("Authorization", "").partition(" ")
+                try:
+                    given = base64.b64decode(value, validate=True).decode().partition(":")[2]
+                except ValueError:
+                    given = ""
+                return kind == "Basic" and hmac.compare_digest(given.encode(), password.encode())
+            if public:
+                return True
             port = self.server.server_address[1]
             return self.headers.get("Host") in (f"127.0.0.1:{port}", f"localhost:{port}")
 
+        def visitor(self):
+            """Who asks: behind a tunnel, the address the tunnel saw (the last X-Forwarded-For entry)."""
+            forwarded = self.headers.get("X-Forwarded-For", "")
+            return forwarded.split(",")[-1].strip() if public and forwarded else self.client_address[0]
+
+        def refuse(self):
+            if password:
+                return self.send_json({"error": "password required"}, 401,
+                                      [("WWW-Authenticate", 'Basic realm="uz-law-agent", charset="UTF-8"')])
+            return self.send_json({"error": "forbidden"}, 403)
+
         def do_GET(self):
-            if not self.addressed_to_us():
-                return self.send_json({"error": "forbidden"}, 403)
+            if not self.allowed():
+                return self.refuse()
             path = unquote(urlparse(self.path).path)
             runs = {p.stem: p for p in sorted(traces.glob("*.json"))}
             if path == "/":
@@ -72,8 +136,8 @@ def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8):
                 self.send_json({"error": "not found"}, 404)
 
         def do_POST(self):
-            if not self.addressed_to_us():
-                return self.send_json({"error": "forbidden"}, 403)
+            if not self.allowed():
+                return self.refuse()
             if urlparse(self.path).path != "/api/ask":
                 return self.send_json({"error": "not found"}, 404)
             if self.headers.get_content_type() != "application/json":
@@ -84,7 +148,20 @@ def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8):
                 question = None
             if not isinstance(question, str) or not question.strip():
                 return self.send_json({"error": 'send {"question": "..."}'}, 400)
+            if len(question.strip()) > MAX_QUESTION:
+                return self.send_json({"error": f"Savol {MAX_QUESTION} belgidan oshmasin."}, 400)
+            if limits and not limits.slots.acquire(blocking=False):
+                return self.send_json({"error": "Hozir agent band. Birozdan soʻng urinib koʻring."}, 503)
+            try:
+                why = limits and limits.admit(self.visitor())
+                if why:
+                    return self.send_json({"error": why}, 429)
+                self.stream(question.strip())
+            finally:
+                if limits:
+                    limits.slots.release()
 
+        def stream(self, question):
             self.send_response(200)
             self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
@@ -95,7 +172,7 @@ def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8):
                 self.wfile.flush()
 
             try:
-                answer, _ = run(question.strip(), law, model(), max_steps=max_steps,
+                answer, _ = run(question, law, model(), max_steps=max_steps,
                                 on_step=lambda step: send("step", step=step))
                 send("answer", answer=answer)
             except (RuntimeError, SystemExit) as e:        # an API error, or no key
@@ -109,8 +186,30 @@ def make_server(port=8765, law=None, model=Gemini, traces=TRACES, max_steps=8):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m agent.web")
     ap.add_argument("--port", type=int, default=8765)
-    server = make_server(ap.parse_args(argv).port)
-    print(f"http://127.0.0.1:{server.server_address[1]}   (Ctrl+C to stop)", flush=True)
+    ap.add_argument("--public", action="store_true",
+                    help="to be reached through a tunnel such as ngrok: accept any host name, ask every visitor "
+                         "for WEB_PASSWORD (from .env), and limit the questions")
+    ap.add_argument("--no-password", action="store_true",
+                    help="with --public: open to everyone, within the limits; every question is paid from your "
+                         "Gemini quota")
+    ap.add_argument("--per-hour", type=int, default=10, help="with --public: questions a visitor an hour (default 10)")
+    ap.add_argument("--per-day", type=int, default=200, help="with --public: questions in all a day (default 200)")
+    a = ap.parse_args(argv)
+    if a.no_password and not a.public:
+        ap.error("--no-password goes with --public")
+    password = limits = None
+    if a.public:
+        limits = Limits(a.per_hour, a.per_day)
+        if not a.no_password:
+            load_env()
+            password = os.environ.get("WEB_PASSWORD", "")
+            if len(password) < 12:
+                raise SystemExit("--public needs WEB_PASSWORD in .env, at least 12 characters: whoever has the link "
+                                 "could otherwise spend your Gemini quota (or add --no-password to open it to all)")
+    server = make_server(a.port, public=a.public, password=password, limits=limits)
+    mode = "" if not a.public else ("   public, " + ("password WEB_PASSWORD" if password else "open to everyone") +
+                                    f", {a.per_hour} questions a visitor an hour, {a.per_day} a day")
+    print(f"http://127.0.0.1:{server.server_address[1]}{mode}   (Ctrl+C to stop)", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

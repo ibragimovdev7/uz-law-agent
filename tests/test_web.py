@@ -2,13 +2,14 @@
 
     python -m unittest discover -s tests -v
 """
+import base64
 import http.client
 import json
 import threading
 import unittest
 
 from agent.corpus import LABOR_CODE, Law
-from agent.web import make_server
+from agent.web import MAX_QUESTION, Limits, make_server
 from test_loop import ANSWER_182, FETCH_182, Script
 
 LAW = Law(LABOR_CODE)
@@ -16,9 +17,11 @@ LAW = Law(LABOR_CODE)
 
 class Server(unittest.TestCase):
     model = staticmethod(lambda: Script(FETCH_182, ANSWER_182))
+    public, password, limits = False, None, None
 
     def setUp(self):
-        self.server = make_server(0, law=LAW, model=lambda: self.model())
+        self.server = make_server(0, law=LAW, model=lambda: self.model(), public=self.public, password=self.password,
+                                  limits=self.limits() if self.limits else None)
         self.server.RequestHandlerClass.log_message = lambda *args: None          # keep the test output clean
         self.port = self.server.server_address[1]
         threading.Thread(target=self.server.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True).start()
@@ -80,6 +83,69 @@ class Ask(Server):
         self.assertEqual(self.request("GET", "/", headers={"Host": "evil.example"})[0], 403)   # DNS rebinding
         self.assertEqual(self.request("POST", "/api/ask", "{}", {"Host": "evil.example",
                                                                  "Content-Type": "application/json"})[0], 403)
+
+
+class Public(Server):
+    """--public: reached by any host name (a tunnel), but only with the password."""
+    public, password = True, "correct horse battery"
+
+    def auth(self, password):
+        return {"Host": "abc123.ngrok-free.app",
+                "Authorization": "Basic " + base64.b64encode(f"anyone:{password}".encode()).decode()}
+
+    def test_without_the_password_the_browser_is_asked_for_it(self):
+        conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
+        conn.request("GET", "/", headers={"Host": "abc123.ngrok-free.app"})
+        r = conn.getresponse()
+        self.assertEqual((r.status, r.getheader("WWW-Authenticate")), (401, 'Basic realm="uz-law-agent", charset="UTF-8"'))
+        conn.close()
+        self.assertEqual(self.request("GET", "/", headers=self.auth("wrong"))[0], 401)
+        self.assertEqual(self.request("GET", "/", headers={"Authorization": "Basic %%%"})[0], 401)
+
+    def test_with_the_password_any_host_name_works(self):
+        self.assertEqual(self.request("GET", "/api/law", headers=self.auth(self.password))[0], 200)
+        status, _, body = self.request("POST", "/api/ask", json.dumps({"question": "savol"}),
+                                       {**self.auth(self.password), "Content-Type": "application/json"})
+        self.assertEqual(json.loads(body.splitlines()[-1])["answer"]["citations"], ["182"])
+
+
+class Open(Server):
+    """--public --no-password: anyone may ask, within the limits."""
+    public, limits = True, staticmethod(lambda: Limits(per_hour=2, per_day=3))
+
+    def ask_as(self, visitor, question="savol"):
+        return self.request("POST", "/api/ask", json.dumps({"question": question}),
+                            {"Host": "abc123.ngrok-free.app", "Content-Type": "application/json",
+                             "X-Forwarded-For": f"10.0.0.9, {visitor}"})          # the tunnel adds the last entry
+
+    def test_anyone_may_ask_until_the_hourly_limit(self):
+        self.assertEqual(self.request("GET", "/", headers={"Host": "abc123.ngrok-free.app"})[0], 200)
+        self.assertEqual([self.ask_as("1.1.1.1")[0] for _ in range(3)], [200, 200, 429])
+        self.assertIn("2 tadan ortiq", json.loads(self.ask_as("1.1.1.1")[2])["error"])
+        self.assertEqual(self.ask_as("2.2.2.2")[0], 200)                       # another visitor, the 3rd today
+        self.assertIn("Bugungi", json.loads(self.ask_as("3.3.3.3")[2])["error"])   # the day's limit
+
+    def test_a_long_question_is_refused(self):
+        self.assertEqual(self.ask_as("1.1.1.1", "x" * (MAX_QUESTION + 1))[0], 400)
+
+
+class LimitsCount(unittest.TestCase):
+    def test_an_hour_later_a_visitor_may_ask_again(self):
+        limits = Limits(per_hour=1, per_day=10)
+        self.assertIsNone(limits.admit("a", now=1000))
+        self.assertIsNotNone(limits.admit("a", now=1000 + 3599))
+        self.assertIsNone(limits.admit("a", now=1000 + 3600))
+
+    def test_the_day_count_starts_again_at_midnight_utc(self):
+        limits = Limits(per_hour=10, per_day=1)
+        self.assertIsNone(limits.admit("a", now=86400 - 10))
+        self.assertIsNotNone(limits.admit("b", now=86400 - 5))
+        self.assertIsNone(limits.admit("b", now=86400 + 5))
+
+    def test_only_so_many_at_once(self):
+        limits = Limits(at_once=1)
+        self.assertTrue(limits.slots.acquire(blocking=False))
+        self.assertFalse(limits.slots.acquire(blocking=False))
 
 
 class NoKey(Server):

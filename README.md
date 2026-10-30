@@ -26,6 +26,18 @@ python3 -m agent.web                  # then open http://127.0.0.1:8765 (--port 
 
 The server listens on this computer only (127.0.0.1); the key never reaches the page.
 
+To share the page through a tunnel such as [ngrok](https://ngrok.com), run it with `--public`: it then accepts any
+host name and limits the questions (10 a visitor an hour, 200 in all a day, 2 at once, 500 characters each; change
+them with `--per-hour` and `--per-day`). Every question is paid from your Gemini quota, and on the free tier Google
+may use what is sent, so by default every visitor must also give `WEB_PASSWORD` from `.env` (12+ characters, any user
+name); `--no-password` opens the page to everyone.
+
+```bash
+python3 -m agent.web --public                  # visitors give WEB_PASSWORD from .env
+python3 -m agent.web --public --no-password    # open to everyone, within the limits
+ngrok http 8765                                # in a second terminal (once: ngrok config add-authtoken <token>)
+```
+
 The free tier allows only a few requests a minute (the client waits and retries), and Google may use what is sent on
 it to improve its products.
 
