@@ -1,0 +1,56 @@
+{
+ "model": "gemini-3.5-flash-lite",
+ "question": "Normal ish haftasi qancha va 18 yoshgacha bo'lganlar uchun farq qiladimi?",
+ "max_steps": 8,
+ "stop": true,
+ "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga koʻra, ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga **40 soatdan** ortiq boʻlishi mumkin emas [182-modda].\n\n18 yoshgacha boʻlgan xodimlar uchun ish vaqti qisqartirilgan tarzda belgilanadi va normal ish haftasidan farq qiladi:\n- **16 yoshdan 18 yoshgacha** boʻlgan xodimlar uchun — haftasiga **36 soatdan** oshmaydigan [415-modda];\n- **15 yoshdan 16 yoshgacha** boʻlgan shaxslar uchun — haftasiga **24 soatdan** oshmaydigan qilib belgilanadi [415-modda].\nShuningdek, oʻquv yili davomida oʻqishdan boʻsh vaqtida ishlayotgan oʻquvchilarning ish vaqti yuqoridagi tegishli yosh meʼyorlarining yarmidan oshishi mumkin emas [415-modda].",
+ "trace": [
+  {
+   "step": 1,
+   "model": "Thought: Normal ish haftasining davomiyligi va 18 yoshgacha bo'lgan xodimlar uchun belgilangan tartibni aniqlash uchun Mehnat kodeksidan tegishli moddalarni qidiramiz.\nAction: search[normal ish haftasi davomiyligi]",
+   "observation": "182-modda: Ish vaqtining normal davomiyligi\n184-modda: Ishi yuqori darajadagi ruhiy, aqliy va asabiy zoʻriqish bilan bogʻliq boʻlgan xodimlar uchun ish vaqtining qisqartirilgan davomiyligi\n185-modda: Har kungi ishning (smenaning) davomiyligi\n189-modda: Ish vaqtidan tashqari ish\n193-modda: Moslashuvchan ish vaqti rejimi"
+  },
+  {
+   "step": 2,
+   "model": "Thought: Normal ish haftasining davomiyligini bilish uchun 182-moddani o'qib chiqamiz, shuningdek, 18 yoshgacha bo'lganlar uchun alohida qisqartirilgan ish vaqti haqidagi moddani topamiz.\nAction: fetch_article[182]",
+   "observation": "182-modda. Ish vaqtining normal davomiyligi\nXodim uchun ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga qirq soatdan ortiq boʻlishi mumkin emas."
+  },
+  {
+   "step": 3,
+   "model": "Thought: Endi 18 yoshgacha bo'lgan xodimlar uchun ish vaqtining davomiyligi haqidagi moddani topish uchun qidiruv beramiz.\nAction: search[o'n sakkiz yoshga to'lmagan xodimlar uchun ish vaqtining davomiyligi]",
+   "observation": "415-modda: Oʻn sakkiz yoshgacha boʻlgan xodimlar uchun qisqartirilgan ish vaqti davomiyligi\n420-modda: Oʻn sakkiz yoshgacha boʻlgan xodimlarning ish vaqtining qisqartirilgan davomiyligida mehnatiga haq toʻlash\n416-modda: Oʻn sakkiz yoshgacha boʻlgan xodimlar uchun har kunlik ishning (smenaning) davomiyligi\n183-modda: Ish vaqtining qisqartirilgan davomiyligi\n397-modda: Uch yoshga toʻlmagan bolaning ota-onasidan birining (vasiysining) qisqartirilgan ish vaqti davomiyligiga boʻlgan huquqi"
+  },
+  {
+   "step": 4,
+   "model": "Thought: O'n sakkiz yoshgacha bo'lgan xodimlar uchun qisqartirilgan ish vaqti davomiyligini aniqlash uchun 415-moddani o'qib chiqamiz.\nAction: fetch_article[415]",
+   "observation": "415-modda. Oʻn sakkiz yoshgacha boʻlgan xodimlar uchun qisqartirilgan ish vaqti davomiyligi\nIsh vaqtining davomiyligi oʻn oltidan oʻn sakkiz yoshgacha boʻlgan xodimlar uchun haftasiga oʻttiz olti soatdan oshmaydigan, oʻn beshdan oʻn olti yoshgacha boʻlgan shaxslar uchun esa haftasiga yigirma toʻrt soatdan oshmaydigan qilib belgilanadi.\nOʻquv yili davomida oʻqishdan boʻsh vaqtida ishlayotgan oʻquvchilarning ish vaqti davomiyligi ushbu moddaning birinchi qismida tegishli yoshdagi shaxslar uchun nazarda tutilgan ish vaqti eng koʻp davomiyligining yarmidan oshishi mumkin emas."
+  },
+  {
+   "step": 5,
+   "model": "Thought: Endi olingan ma'lumotlar asosida normal ish haftasi va 18 yoshgacha bo'lganlar uchun farqini to'liq yozib javob beramiz.\nAction: answer[Oʻzbekiston Respublikasining Mehnat kodeksiga koʻra, ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga **40 soatdan** ortiq boʻlishi mumkin emas [182-modda].\n\n18 yoshgacha boʻlgan xodimlar uchun ish vaqti qisqartirilgan tarzda belgilanadi va normal ish haftasidan farq qiladi:\n- **16 yoshdan 18 yoshgacha** boʻlgan xodimlar uchun — haftasiga **36 soatdan** oshmaydigan [415-modda];\n- **15 yoshdan 16 yoshgacha** boʻlgan shaxslar uchun — haftasiga **24 soatdan** oshmaydigan qilib belgilanadi [415-modda].\nShuningdek, oʻquv yili davomida oʻqishdan boʻsh vaqtida ishlayotgan oʻquvchilarning ish vaqti yuqoridagi tegishli yosh meʼyorlarining yarmidan oshishi mumkin emas [415-modda].]",
+   "observation": null
+  }
+ ],
+ "calls": [
+  {
+   "prompt": "d0411de6131e5d8b",
+   "reply": "Thought: Normal ish haftasining davomiyligi va 18 yoshgacha bo'lgan xodimlar uchun belgilangan tartibni aniqlash uchun Mehnat kodeksidan tegishli moddalarni qidiramiz.\nAction: search[normal ish haftasi davomiyligi]"
+  },
+  {
+   "prompt": "30113ffa04c41de8",
+   "reply": "Thought: Normal ish haftasining davomiyligini bilish uchun 182-moddani o'qib chiqamiz, shuningdek, 18 yoshgacha bo'lganlar uchun alohida qisqartirilgan ish vaqti haqidagi moddani topamiz.\nAction: fetch_article[182]"
+  },
+  {
+   "prompt": "263b2302f6a8eef5",
+   "reply": "Thought: Endi 18 yoshgacha bo'lgan xodimlar uchun ish vaqtining davomiyligi haqidagi moddani topish uchun qidiruv beramiz.\nAction: search[o'n sakkiz yoshga to'lmagan xodimlar uchun ish vaqtining davomiyligi]"
+  },
+  {
+   "prompt": "eaabf53d21405a68",
+   "reply": "Thought: O'n sakkiz yoshgacha bo'lgan xodimlar uchun qisqartirilgan ish vaqti davomiyligini aniqlash uchun 415-moddani o'qib chiqamiz.\nAction: fetch_article[415]"
+  },
+  {
+   "prompt": "034d6cc39d3edd7a",
+   "reply": "Thought: Endi olingan ma'lumotlar asosida normal ish haftasi va 18 yoshgacha bo'lganlar uchun farqini to'liq yozib javob beramiz.\nAction: answer[Oʻzbekiston Respublikasining Mehnat kodeksiga koʻra, ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga **40 soatdan** ortiq boʻlishi mumkin emas [182-modda].\n\n18 yoshgacha boʻlgan xodimlar uchun ish vaqti qisqartirilgan tarzda belgilanadi va normal ish haftasidan farq qiladi:\n- **16 yoshdan 18 yoshgacha** boʻlgan xodimlar uchun — haftasiga **36 soatdan** oshmaydigan [415-modda];\n- **15 yoshdan 16 yoshgacha** boʻlgan shaxslar uchun — haftasiga **24 soatdan** oshmaydigan qilib belgilanadi [415-modda].\nShuningdek, oʻquv yili davomida oʻqishdan boʻsh vaqtida ishlayotgan oʻquvchilarning ish vaqti yuqoridagi tegishli yosh meʼyorlarining yarmidan oshishi mumkin emas [415-modda].]"
+  }
+ ]
+}

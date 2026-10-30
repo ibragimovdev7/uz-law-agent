@@ -21,9 +21,9 @@ with Uzbek words, for example: search[ish vaqtining davomiyligi]
 code does not answer the question, say so.
 
 Work in turns. In each turn write exactly two lines:
-Thought: <your reasoning>
+Thought: <one sentence: what you know so far, and why the next action>
 Action: <one action>
-Then stop. The result comes back to you as "Observation: ...". Never write an Observation yourself."""
+The Thought line is required: it is shown to the reader as the trace of your reasoning. Then stop. The result comes back to you as "Observation: ...". Never write an Observation yourself."""
 
 CANNOT_READ = "I could not read an action. Write one line: Action: search[...], fetch_article[...] or answer[...]"
 
