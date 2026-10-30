@@ -12,6 +12,13 @@ from agent.llm import TRACES, Gemini, Recorder, Replay
 from agent.loop import run
 
 
+def show(step):
+    print(f"\n── step {step['step']}" + (f"\n{step['text']}" if step["text"] else ""))
+    for call, result in zip(step["calls"], step["results"]):
+        content = result["content"] if len(result["content"]) < 400 else result["content"][:400] + " …"
+        print(f"{call['name']}({json.dumps(call['args'], ensure_ascii=False)})\n→ {content}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m agent")
     ap.add_argument("question", nargs="?")
@@ -34,13 +41,13 @@ def main(argv=None):
 
     print(f"Q: {question}", flush=True)
     try:
-        answer, trace = run(question, Law(LABOR_CODE), model, max_steps=max_steps, show=print)
+        answer, trace = run(question, Law(LABOR_CODE), model, max_steps=max_steps, on_step=show)
     except RuntimeError as e:                 # an API error, or a replay that no longer matches
         raise SystemExit(f"error: {e}") from None
     if answer:
         print(f"\nANSWER: {answer['answer']}\nCITATIONS: {', '.join(answer['citations']) or '-'}")
     else:
-        print("\nANSWER: none")
+        print(f"\n── stopped: {max_steps} steps without an answer\nANSWER: none")
     if a.record:
         TRACES.mkdir(exist_ok=True)
         saved = {"model": live.model, "question": question, "max_steps": max_steps, "answer": answer,

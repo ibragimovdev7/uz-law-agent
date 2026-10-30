@@ -7,7 +7,6 @@ The loop ends when the model calls answer with citations that are articles it ha
 The model is any object with complete(system, messages, tools) -> {"text": str, "calls": [{"id", "name", "args"}]},
 so the loop does not depend on a provider.
 """
-import json
 
 
 def params(**properties):
@@ -91,14 +90,9 @@ def act(law, call, read):
     return "accepted", {"answer": args["answer"], "citations": list(dict.fromkeys(ids))}
 
 
-def shown(call, result):
-    result = result if len(result) < 400 else result[:400] + " …"
-    return f"{call['name']}({json.dumps(call['args'], ensure_ascii=False)})\n→ {result}"
-
-
-def run(question, law, model, max_steps=8, show=lambda text: None):
+def run(question, law, model, max_steps=8, on_step=lambda step: None):
     """The loop. Returns (the answer {"answer", "citations"}, or None if the steps ran out; the trace, one dict per
-    step: what the model wrote, its calls, and their results)."""
+    step: what the model wrote, its calls, and their results). on_step gets each step as it ends, to show it."""
     system, messages, trace, read = system_prompt(law), [{"role": "user", "content": question}], [], set()
     for step in range(1, max_steps + 1):
         reply = model.complete(system, messages, TOOLS)
@@ -109,10 +103,8 @@ def run(question, law, model, max_steps=8, show=lambda text: None):
             results.append({"id": call["id"], "name": call["name"], "content": result})
             final = final or done
         trace.append({"step": step, **reply, "results": results})
-        show(f"\n── step {step}" + (f"\n{reply['text']}" if reply["text"] else "") +
-             "".join(f"\n{shown(c, r['content'])}" for c, r in zip(reply["calls"], results)))
+        on_step(trace[-1])
         if final:
             return final, trace
         messages.append({"role": "tool", "results": results} if results else {"role": "user", "content": NO_CALL})
-    show(f"\n── stopped: {max_steps} steps without an answer")
     return None, trace
