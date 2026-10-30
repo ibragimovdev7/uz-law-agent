@@ -2,37 +2,125 @@
  "model": "gemini-3.5-flash-lite",
  "question": "Normal ish haftasi necha soat?",
  "max_steps": 8,
- "stop": true,
- "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga koʻra, xodim uchun ish vaqtining normal davomiyligi haftasiga qirq soatdan ortiq boʻlishi mumkin emas [182-modda].",
+ "answer": {
+  "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga muvofiq, xodim uchun ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga **qirq soatdan** ortiq boʻlishi mumkin emas [182-modda].",
+  "citations": [
+   "182"
+  ]
+ },
  "trace": [
   {
    "step": 1,
-   "model": "Thought: I need to find the article that specifies the duration of the normal work week in the Labor Code.\nAction: search[normal ish haftasining davomiyligi]",
-   "observation": "182-modda: Ish vaqtining normal davomiyligi\n184-modda: Ishi yuqori darajadagi ruhiy, aqliy va asabiy zoʻriqish bilan bogʻliq boʻlgan xodimlar uchun ish vaqtining qisqartirilgan davomiyligi\n185-modda: Har kungi ishning (smenaning) davomiyligi\n189-modda: Ish vaqtidan tashqari ish\n193-modda: Moslashuvchan ish vaqti rejimi"
+   "text": "",
+   "calls": [
+    {
+     "id": "call_527391",
+     "name": "search",
+     "args": {
+      "query": "normal ish haftasi davomiyligi"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_527391",
+     "name": "search",
+     "content": "182-modda: Ish vaqtining normal davomiyligi\n184-modda: Ishi yuqori darajadagi ruhiy, aqliy va asabiy zoʻriqish bilan bogʻliq boʻlgan xodimlar uchun ish vaqtining qisqartirilgan davomiyligi\n185-modda: Har kungi ishning (smenaning) davomiyligi\n189-modda: Ish vaqtidan tashqari ish\n193-modda: Moslashuvchan ish vaqti rejimi"
+    }
+   ]
   },
   {
    "step": 2,
-   "model": "Thought: I will fetch Article 182 to get the exact hours for the normal work week.\nAction: fetch_article[182]",
-   "observation": "182-modda. Ish vaqtining normal davomiyligi\nXodim uchun ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga qirq soatdan ortiq boʻlishi mumkin emas."
+   "text": "",
+   "calls": [
+    {
+     "id": "call_530026",
+     "name": "fetch_article",
+     "args": {
+      "article": "182"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_530026",
+     "name": "fetch_article",
+     "content": "182-modda. Ish vaqtining normal davomiyligi\nXodim uchun ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga qirq soatdan ortiq boʻlishi mumkin emas."
+    }
+   ]
   },
   {
    "step": 3,
-   "model": "Thought: I have found the exact hours of the normal work week from Article 182 and can now answer the user's question.\nAction: answer[Oʻzbekiston Respublikasining Mehnat kodeksiga koʻra, xodim uchun ish vaqtining normal davomiyligi haftasiga qirq soatdan ortiq boʻlishi mumkin emas [182-modda].]",
-   "observation": null
+   "text": "",
+   "calls": [
+    {
+     "id": "call_546412",
+     "name": "answer",
+     "args": {
+      "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga muvofiq, xodim uchun ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga **qirq soatdan** ortiq boʻlishi mumkin emas [182-modda].",
+      "citations": [
+       "182-modda"
+      ]
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_546412",
+     "name": "answer",
+     "content": "accepted"
+    }
+   ]
   }
  ],
  "calls": [
   {
-   "prompt": "5921d78dca4d7ae1",
-   "reply": "Thought: I need to find the article that specifies the duration of the normal work week in the Labor Code.\nAction: search[normal ish haftasining davomiyligi]"
+   "prompt": "74d9f9523002766e",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_527391",
+      "name": "search",
+      "args": {
+       "query": "normal ish haftasi davomiyligi"
+      }
+     }
+    ]
+   }
   },
   {
-   "prompt": "f7f68cf6fbd1ef6a",
-   "reply": "Thought: I will fetch Article 182 to get the exact hours for the normal work week.\nAction: fetch_article[182]"
+   "prompt": "fdb4a4112dea891a",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_530026",
+      "name": "fetch_article",
+      "args": {
+       "article": "182"
+      }
+     }
+    ]
+   }
   },
   {
-   "prompt": "0849c09763888d77",
-   "reply": "Thought: I have found the exact hours of the normal work week from Article 182 and can now answer the user's question.\nAction: answer[Oʻzbekiston Respublikasining Mehnat kodeksiga koʻra, xodim uchun ish vaqtining normal davomiyligi haftasiga qirq soatdan ortiq boʻlishi mumkin emas [182-modda].]"
+   "prompt": "449b608c5964ae4c",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_546412",
+      "name": "answer",
+      "args": {
+       "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga muvofiq, xodim uchun ish vaqtining normal davomiyligi besh kunlik yoki olti kunlik ish haftasida haftasiga **qirq soatdan** ortiq boʻlishi mumkin emas [182-modda].",
+       "citations": [
+        "182-modda"
+       ]
+      }
+     }
+    ]
+   }
   }
  ]
 }

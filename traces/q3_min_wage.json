@@ -2,46 +2,230 @@
  "model": "gemini-3.5-flash-lite",
  "question": "Oʻzbekistonda eng kam oylik ish haqi necha soʻm?",
  "max_steps": 8,
- "stop": true,
- "answer": "Oʻzbekiston Respublikasining Mehnat kodeksida mehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan belgilanishi koʻrsatilgan, biroq kodeks matnida aniq pul miqdori keltirilmagan [245-modda].",
+ "answer": {
+  "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga muvofiq, mehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan insonning munosib turmush darajasini taʼminlash zarurati hamda Ijtimoiy-mehnat masalalari boʻyicha respublika uch tomonlama komissiyasining takliflari hisobga olingan holda belgilanadi [245-modda]. \n\nBiroq Oʻzbekiston Respublikasining Mehnat kodeksida mehnatga haq toʻlashning eng kam miqdorining aniq soʻmdagi miqdori koʻrsatilmagan (bu miqdor Oʻzbekiston Respublikasi Prezidentining alohida farmonlari bilan belgilanadi) [245-modda]. Ish vaqtining oylik normasini ishlab bergan va oʻz mehnat majburiyatlarini bajargan xodimning oylik ish haqi qonunchilikda belgilangan mehnatga haq toʻlashning eng kam miqdoridan kam boʻlishi mumkin emas [245-modda].",
+  "citations": [
+   "245"
+  ]
+ },
  "trace": [
   {
    "step": 1,
-   "model": "Thought: I need to check the articles of the Labor Code to see if it specifies the amount of the minimum wage (eng kam oylik ish haqi).\nAction: search[eng kam ish haqi]",
-   "observation": "99-modda: Ish oʻrinlarining belgilangan eng kam soni hisobiga ishga joylashtirish\n240-modda: Ish haqi qisman saqlanadigan taʼtil\n243-modda: Mehnatga haq toʻlash va ish haqi tushunchalari\n257-modda: Oʻrtacha ish haqi va uni hisoblab chiqarish tartibi\n331-modda: Boquvchining yoʻqotilgan ish haqi oʻrnini qoplash uchun amalga oshiriladigan har oylik toʻlovlar miqdori"
+   "text": "",
+   "calls": [
+    {
+     "id": "call_472851",
+     "name": "search",
+     "args": {
+      "query": "eng kam oylik ish haqi"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_472851",
+     "name": "search",
+     "content": "331-modda: Boquvchining yoʻqotilgan ish haqi oʻrnini qoplash uchun amalga oshiriladigan har oylik toʻlovlar miqdori\n243-modda: Mehnatga haq toʻlash va ish haqi tushunchalari\n257-modda: Oʻrtacha ish haqi va uni hisoblab chiqarish tartibi\n324-modda: Xodimning sogʻligʻiga ziyon yetkazilganligi munosabati bilan yoʻqotilgan ish haqining oʻrnini qoplash uchun amalga oshiriladigan oylik toʻlovlar miqdori\n99-modda: Ish oʻrinlarining belgilangan eng kam soni hisobiga ishga joylashtirish"
+    }
+   ]
   },
   {
    "step": 2,
-   "model": "Thought: Let me search specifically for \"eng kam oʻqish\" or \"mehnatga haq toʻlashning eng kam miqdori\" to see how the minimum wage is defined or mentioned in the Labor Code.\nAction: search[mehnatga haq toʻlashning eng kam miqdori]",
-   "observation": "245-modda: Mehnatga haq toʻlashning eng kam miqdorini belgilash\n243-modda: Mehnatga haq toʻlash va ish haqi tushunchalari\n244-modda: Xodimlarning mehnatiga haq toʻlash sohasidagi asosiy kafolatlar\n246-modda: Mehnatga haq toʻlash shartlarini va miqdorini belgilash\n251-modda: Mehnatga haq toʻlashning tarifsiz tizimi"
+   "text": "",
+   "calls": [
+    {
+     "id": "call_546122",
+     "name": "search",
+     "args": {
+      "query": "eng kam miqdori"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_546122",
+     "name": "search",
+     "content": "245-modda: Mehnatga haq toʻlashning eng kam miqdorini belgilash\n99-modda: Ish oʻrinlarining belgilangan eng kam soni hisobiga ishga joylashtirish\n217-modda: Har yilgi asosiy eng kam mehnat taʼtilining davomiyligi\n324-modda: Xodimning sogʻligʻiga ziyon yetkazilganligi munosabati bilan yoʻqotilgan ish haqining oʻrnini qoplash uchun amalga oshiriladigan oylik toʻlovlar miqdori\n331-modda: Boquvchining yoʻqotilgan ish haqi oʻrnini qoplash uchun amalga oshiriladigan har oylik toʻlovlar miqdori"
+    }
+   ]
   },
   {
    "step": 3,
-   "model": "Thought: I will read Article 245 to see if the actual numerical amount of the minimum wage is stated in the Labor Code.\nAction: fetch_article[245]",
-   "observation": "245-modda. Mehnatga haq toʻlashning eng kam miqdorini belgilash\nMehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan insonning munosib turmush darajasini taʼminlash zarurati hamda Ijtimoiy-mehnat masalalari boʻyicha respublika uch tomonlama komissiyasi tomonidan ishlab chiqilgan takliflar hisobga olingan holda Oʻzbekiston Respublikasining butun hududida bir vaqtning oʻzida belgilanadi hamda tashkiliy-huquqiy shakllaridan, mulkchilik shakllaridan va idoraviy boʻysunuvidan qatʼi nazar, barcha ish beruvchilar uchun majburiydir.\nIsh vaqtining oylik normasini ishlab bergan va mehnat shartnomasida belgilangan mehnat vazifasini bajargan xodimning mehnatiga haq toʻlashning oylik miqdori qonunchilikda belgilangan mehnatga haq toʻlashning eng kam miqdoridan kam boʻlishi mumkin emas.\nOʻz mehnat majburiyatlarini bajargan xodimning mehnatiga soatbay haq toʻlashning eng kam miqdori tegishli kalendar yilda olti kunlik ish haftasidagi ish soatlarining oʻrtacha oylik miqdoriga boʻlingan, bir oyda mehnatga haq toʻlashning qonunchilikda belgilangan eng kam miqdoridan kam boʻlishi mumkin emas.\nMehnatga haq toʻlash tizimida nazarda tutilgan mukofotlar, ish haqiga ustamalar, boshqa ragʻbatlantiruvchi toʻlovlar, shuningdek ish vaqtidan tashqari ish, dam olish kunlaridagi va ishlanmaydigan bayram kunlaridagi ish, tungi vaqtdagi ish uchun toʻlovlar, tuman koeffitsiyentlariga doir toʻlovlar hamda boshqa kompensatsiyaga oid va ijtimoiy toʻlovlar mehnatga haq toʻlashning eng kam miqdoriga kiritilmaydi."
+   "text": "",
+   "calls": [
+    {
+     "id": "call_522440",
+     "name": "fetch_article",
+     "args": {
+      "article": "245-modda"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_522440",
+     "name": "fetch_article",
+     "content": "245-modda. Mehnatga haq toʻlashning eng kam miqdorini belgilash\nMehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan insonning munosib turmush darajasini taʼminlash zarurati hamda Ijtimoiy-mehnat masalalari boʻyicha respublika uch tomonlama komissiyasi tomonidan ishlab chiqilgan takliflar hisobga olingan holda Oʻzbekiston Respublikasining butun hududida bir vaqtning oʻzida belgilanadi hamda tashkiliy-huquqiy shakllaridan, mulkchilik shakllaridan va idoraviy boʻysunuvidan qatʼi nazar, barcha ish beruvchilar uchun majburiydir.\nIsh vaqtining oylik normasini ishlab bergan va mehnat shartnomasida belgilangan mehnat vazifasini bajargan xodimning mehnatiga haq toʻlashning oylik miqdori qonunchilikda belgilangan mehnatga haq toʻlashning eng kam miqdoridan kam boʻlishi mumkin emas.\nOʻz mehnat majburiyatlarini bajargan xodimning mehnatiga soatbay haq toʻlashning eng kam miqdori tegishli kalendar yilda olti kunlik ish haftasidagi ish soatlarining oʻrtacha oylik miqdoriga boʻlingan, bir oyda mehnatga haq toʻlashning qonunchilikda belgilangan eng kam miqdoridan kam boʻlishi mumkin emas.\nMehnatga haq toʻlash tizimida nazarda tutilgan mukofotlar, ish haqiga ustamalar, boshqa ragʻbatlantiruvchi toʻlovlar, shuningdek ish vaqtidan tashqari ish, dam olish kunlaridagi va ishlanmaydigan bayram kunlaridagi ish, tungi vaqtdagi ish uchun toʻlovlar, tuman koeffitsiyentlariga doir toʻlovlar hamda boshqa kompensatsiyaga oid va ijtimoiy toʻlovlar mehnatga haq toʻlashning eng kam miqdoriga kiritilmaydi."
+    }
+   ]
   },
   {
    "step": 4,
-   "model": "Thought: The Labor Code states that the minimum wage is set by the President, but it does not specify the exact numerical amount in sums [245-modda].\nAction: answer[Oʻzbekiston Respublikasining Mehnat kodeksida mehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan belgilanishi koʻrsatilgan, biroq kodeks matnida aniq pul miqdori keltirilmagan [245-modda].]",
-   "observation": null
+   "text": "",
+   "calls": [
+    {
+     "id": "call_437079",
+     "name": "search",
+     "args": {
+      "query": "Mehnatga haq toʻlashning eng kam miqdori soʻm"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_437079",
+     "name": "search",
+     "content": "245-modda: Mehnatga haq toʻlashning eng kam miqdorini belgilash\n243-modda: Mehnatga haq toʻlash va ish haqi tushunchalari\n244-modda: Xodimlarning mehnatiga haq toʻlash sohasidagi asosiy kafolatlar\n246-modda: Mehnatga haq toʻlash shartlarini va miqdorini belgilash\n251-modda: Mehnatga haq toʻlashning tarifsiz tizimi"
+    }
+   ]
+  },
+  {
+   "step": 5,
+   "text": "",
+   "calls": [
+    {
+     "id": "call_647063",
+     "name": "search",
+     "args": {
+      "query": "O'zbekiston Respublikasining Mehnat kodeksi"
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_647063",
+     "name": "search",
+     "content": "523-modda: Oʻzbekiston Respublikasi hududida mehnat faoliyatini amalga oshirish huquqiga doir tasdiqnoma\n525-modda: Mehnat faoliyatini amalga oshirish maqsadida Oʻzbekiston Respublikasi hududiga qonuniy ravishda kirib kelgan chet el fuqarosi boʻlgan xodim bilan tuzilgan mehnat shartnomasini bekor qilishning oʻziga xos xususiyatlari\n30-modda: Oʻzbekiston Respublikasi hududida mehnat faoliyati huquqiga doir tasdiqnoma mavjud boʻlganda mehnat shartnomasi asosida yuzaga keladigan yakka tartibdagi mehnatga oid munosabatlar\n524-modda: Mehnat faoliyatini amalga oshirish maqsadida Oʻzbekiston Respublikasi hududiga qonuniy ravishda kirib kelgan chet el fuqarosi bilan tuzilgan mehnat shartnomasining amal qilish muddati\n535-modda: Oʻzbekiston Respublikasi Kambagʻallikni qisqartirish va bandlik vazirligining Davlat mehnat inspeksiyasi"
+    }
+   ]
+  },
+  {
+   "step": 6,
+   "text": "",
+   "calls": [
+    {
+     "id": "call_425940",
+     "name": "answer",
+     "args": {
+      "citations": [
+       "245-modda"
+      ],
+      "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga muvofiq, mehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan insonning munosib turmush darajasini taʼminlash zarurati hamda Ijtimoiy-mehnat masalalari boʻyicha respublika uch tomonlama komissiyasining takliflari hisobga olingan holda belgilanadi [245-modda]. \n\nBiroq Oʻzbekiston Respublikasining Mehnat kodeksida mehnatga haq toʻlashning eng kam miqdorining aniq soʻmdagi miqdori koʻrsatilmagan (bu miqdor Oʻzbekiston Respublikasi Prezidentining alohida farmonlari bilan belgilanadi) [245-modda]. Ish vaqtining oylik normasini ishlab bergan va oʻz mehnat majburiyatlarini bajargan xodimning oylik ish haqi qonunchilikda belgilangan mehnatga haq toʻlashning eng kam miqdoridan kam boʻlishi mumkin emas [245-modda]."
+     }
+    }
+   ],
+   "results": [
+    {
+     "id": "call_425940",
+     "name": "answer",
+     "content": "accepted"
+    }
+   ]
   }
  ],
  "calls": [
   {
-   "prompt": "4b47e9dada973bbe",
-   "reply": "Thought: I need to check the articles of the Labor Code to see if it specifies the amount of the minimum wage (eng kam oylik ish haqi).\nAction: search[eng kam ish haqi]"
+   "prompt": "398ab4be86940b22",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_472851",
+      "name": "search",
+      "args": {
+       "query": "eng kam oylik ish haqi"
+      }
+     }
+    ]
+   }
   },
   {
-   "prompt": "3098254bb8fab692",
-   "reply": "Thought: Let me search specifically for \"eng kam oʻqish\" or \"mehnatga haq toʻlashning eng kam miqdori\" to see how the minimum wage is defined or mentioned in the Labor Code.\nAction: search[mehnatga haq toʻlashning eng kam miqdori]"
+   "prompt": "cf25c399247ba1c5",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_546122",
+      "name": "search",
+      "args": {
+       "query": "eng kam miqdori"
+      }
+     }
+    ]
+   }
   },
   {
-   "prompt": "5907f0dfd9cced96",
-   "reply": "Thought: I will read Article 245 to see if the actual numerical amount of the minimum wage is stated in the Labor Code.\nAction: fetch_article[245]"
+   "prompt": "5622d2142e6ecbd5",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_522440",
+      "name": "fetch_article",
+      "args": {
+       "article": "245-modda"
+      }
+     }
+    ]
+   }
   },
   {
-   "prompt": "ab7ade2af80cac7e",
-   "reply": "Thought: The Labor Code states that the minimum wage is set by the President, but it does not specify the exact numerical amount in sums [245-modda].\nAction: answer[Oʻzbekiston Respublikasining Mehnat kodeksida mehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan belgilanishi koʻrsatilgan, biroq kodeks matnida aniq pul miqdori keltirilmagan [245-modda].]"
+   "prompt": "5bf2c0255042f259",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_437079",
+      "name": "search",
+      "args": {
+       "query": "Mehnatga haq toʻlashning eng kam miqdori soʻm"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "prompt": "a811005d5c9cd6c3",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_647063",
+      "name": "search",
+      "args": {
+       "query": "O'zbekiston Respublikasining Mehnat kodeksi"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "prompt": "9430bc9da6797029",
+   "reply": {
+    "text": "",
+    "calls": [
+     {
+      "id": "call_425940",
+      "name": "answer",
+      "args": {
+       "citations": [
+        "245-modda"
+       ],
+       "answer": "Oʻzbekiston Respublikasining Mehnat kodeksiga muvofiq, mehnatga haq toʻlashning eng kam miqdori Oʻzbekiston Respublikasi Prezidenti tomonidan insonning munosib turmush darajasini taʼminlash zarurati hamda Ijtimoiy-mehnat masalalari boʻyicha respublika uch tomonlama komissiyasining takliflari hisobga olingan holda belgilanadi [245-modda]. \n\nBiroq Oʻzbekiston Respublikasining Mehnat kodeksida mehnatga haq toʻlashning eng kam miqdorining aniq soʻmdagi miqdori koʻrsatilmagan (bu miqdor Oʻzbekiston Respublikasi Prezidentining alohida farmonlari bilan belgilanadi) [245-modda]. Ish vaqtining oylik normasini ishlab bergan va oʻz mehnat majburiyatlarini bajargan xodimning oylik ish haqi qonunchilikda belgilangan mehnatga haq toʻlashning eng kam miqdoridan kam boʻlishi mumkin emas [245-modda]."
+      }
+     }
+    ]
+   }
   }
  ]
 }

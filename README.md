@@ -3,9 +3,10 @@
 An open-source Uzbek law agent: it answers a question by searching Uzbek law and reading articles, and cites the
 articles it used. It is developed following Module 7 (AI Agents, Tool Use & Retrieval) of the Advanced AI course.
 
-The law included so far is the Labor Code of Uzbekistan (581 articles). The agent is a ReAct loop: the model writes a
-Thought and one Action (`search`, `fetch_article` or `answer`) as text, our code runs it and sends back the result,
-until the model answers or the step limit is reached. The model is Google's Gemini (free tier). Only Python's
+The law included so far is the Labor Code of Uzbekistan (581 articles). The agent is a tool-calling loop: the tools
+`search`, `fetch_article` and `answer` are declared with JSON schemas, the model returns structured calls, and our code
+checks each call against its schema, runs it and sends back the result. The run ends when the model calls `answer`
+with an answer and the articles it cites, each one an article it has read, or at the step limit. The model is Google's Gemini (free tier). Only Python's
 standard library is used (tested with Python 3.12): nothing to install.
 
 ## Quick start
@@ -32,7 +33,7 @@ python3 -m unittest discover -s tests -v     # offline, no key
 |---|---|
 | `data/` | the laws (one file per law) and a source note next to each: where the text comes from, the date, the licence |
 | `agent/corpus.py` | a law: its articles and the two tools, `search` and `fetch_article` |
-| `agent/loop.py` | the ReAct loop and the system prompt |
+| `agent/loop.py` | the agent loop, the tools' JSON schemas and the system prompt |
 | `agent/llm.py` | the model: Gemini live, recording and replay |
 | `agent/__main__.py` | the command line |
 | `tests/` | tests |

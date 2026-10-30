@@ -12,67 +12,80 @@ from unittest import mock
 
 import agent.__main__ as cli
 from agent.corpus import LABOR_CODE, Law
-from agent.llm import Recorder, Replay, reply, request_body
-from agent.loop import run
-from test_loop import Script
+from agent.llm import Recorder, Replay, reply, request_body, turn_key
+from agent.loop import TOOLS, run
+from test_loop import ANSWER_182, FETCH_182, Script
 
 LAW = Law(LABOR_CODE)
-TURNS = ("Thought: look\nAction: fetch_article[182]", "Thought: done\nAction: answer[40 soat [182-modda]]")
+CALL = {"id": "call_1", "name": "fetch_article", "args": {"article": "182"}}
+MESSAGES = [{"role": "user", "content": "q"},
+            {"role": "assistant", "text": "", "calls": [CALL]},
+            {"role": "tool", "results": [{"id": "call_1", "name": "fetch_article", "content": "182-modda. ..."}]}]
 
 
 class GeminiRequest(unittest.TestCase):
-    def test_roles_system_and_stop(self):
-        body = request_body("sys", [{"role": "user", "content": "q"}, {"role": "assistant", "content": "a"},
-                                    {"role": "user", "content": "Observation: o"}], ["Observation:"])
+    def test_tools_become_function_declarations_and_every_turn_is_a_call(self):
+        body = request_body("sys", MESSAGES[:1], TOOLS)
         self.assertEqual(body["systemInstruction"], {"parts": [{"text": "sys"}]})
-        self.assertEqual([(c["role"], c["parts"][0]["text"]) for c in body["contents"]],
-                         [("user", "q"), ("model", "a"), ("user", "Observation: o")])
-        self.assertEqual(body["generationConfig"], {"stopSequences": ["Observation:"]})
-        self.assertNotIn("generationConfig", request_body("sys", [{"role": "user", "content": "q"}]))
+        [declarations] = body["tools"]
+        self.assertEqual([d["name"] for d in declarations["functionDeclarations"]], ["search", "fetch_article", "answer"])
+        self.assertEqual(declarations["functionDeclarations"][1]["parametersJsonSchema"], TOOLS[1]["parameters"])
+        self.assertEqual(body["toolConfig"], {"functionCallingConfig": {"mode": "ANY"}})
+
+    def test_roles_calls_and_results(self):
+        contents = request_body("sys", MESSAGES, TOOLS)["contents"]
+        self.assertEqual([c["role"] for c in contents], ["user", "model", "user"])
+        self.assertEqual(contents[1]["parts"], [{"functionCall": {"name": "fetch_article", "args": {"article": "182"},
+                                                                  "id": "call_1"}}])
+        self.assertEqual(contents[2]["parts"], [{"functionResponse": {"name": "fetch_article",
+                                                                      "response": {"result": "182-modda. ..."},
+                                                                      "id": "call_1"}}])
 
     def test_a_model_turn_goes_back_as_gemini_wrote_it(self):
-        sent = {"role": "model", "parts": [{"text": "a", "thoughtSignature": "c2ln"}]}
-        body = request_body("sys", [{"role": "user", "content": "q"}, {"role": "assistant", "content": "a"}],
-                            replies={"a": sent})
-        self.assertEqual(body["contents"][1], sent)
+        sent = {"role": "model", "parts": [{"functionCall": {"name": "fetch_article", "args": {"article": "182"},
+                                                             "id": "call_1"}, "thoughtSignature": "c2ln"}]}
+        contents = request_body("sys", MESSAGES, TOOLS, sent={turn_key(MESSAGES[1]): sent})["contents"]
+        self.assertEqual(contents[1], sent)
 
-    def test_the_reply_text_leaves_out_thoughts(self):
-        response = {"candidates": [{"content": {"parts": [{"text": "thinking...", "thought": True},
-                                                          {"text": "Thought: x\n"}, {"text": "Action: answer[y]"}]},
-                                    "finishReason": "STOP"}]}
-        text, content = reply(response)
-        self.assertEqual(text, "Thought: x\nAction: answer[y]")
-        self.assertEqual(content["role"], "model")
+    def test_the_reply_is_text_without_thoughts_and_the_calls(self):
+        response = {"candidates": [{"content": {"parts": [
+            {"text": "thinking...", "thought": True}, {"text": "Let me read it."},
+            {"functionCall": {"name": "fetch_article", "args": {"article": "182"}, "id": "call_1"},
+             "thoughtSignature": "c2ln"}]}, "finishReason": "STOP"}]}
+        answer, content = reply(response)
+        self.assertEqual(answer, {"text": "Let me read it.", "calls": [CALL]})
+        self.assertEqual((content["role"], len(content["parts"])), ("model", 3))
 
-    def test_a_blocked_prompt_is_an_error(self):
+    def test_missing_parts_and_a_blocked_prompt(self):
+        self.assertEqual(reply({"candidates": [{"finishReason": "STOP"}]})[0], {"text": "", "calls": []})
         with self.assertRaises(RuntimeError):
             reply({"promptFeedback": {"blockReason": "SAFETY"}})
 
 
 class RecordAndReplay(unittest.TestCase):
     def test_a_recorded_run_replays_to_the_same_answer(self):
-        recorder = Recorder(Script(*TURNS))
+        recorder = Recorder(Script(FETCH_182, ANSWER_182))
         answer, trace = run("savol", LAW, recorder)
         self.assertEqual(len(recorder.calls), 2)
         self.assertEqual(run("savol", LAW, Replay(recorder.calls)), (answer, trace))
 
     def test_a_changed_prompt_fails_loudly(self):
-        recorder = Recorder(Script(*TURNS))
+        recorder = Recorder(Script(FETCH_182, ANSWER_182))
         run("savol", LAW, recorder)
         with self.assertRaisesRegex(RuntimeError, "call 1 differs"):
             run("boshqa savol", LAW, Replay(recorder.calls))
 
     def test_the_command_line_replays_a_saved_run(self):
-        recorder = Recorder(Script(*TURNS))
+        recorder = Recorder(Script(FETCH_182, ANSWER_182))
         answer, trace = run("savol", LAW, recorder)
         with tempfile.TemporaryDirectory() as d:
-            saved = {"model": "scripted", "question": "savol", "max_steps": 8, "stop": True,
-                     "answer": answer, "trace": trace, "calls": recorder.calls}
+            saved = {"model": "scripted", "question": "savol", "max_steps": 8, "answer": answer, "trace": trace,
+                     "calls": json.loads(json.dumps(recorder.calls))}
             Path(d, "demo.json").write_text(json.dumps(saved), encoding="utf-8")
             out = io.StringIO()
             with mock.patch.object(cli, "TRACES", Path(d)), contextlib.redirect_stdout(out):
                 cli.main(["--replay", "demo"])
-        self.assertIn("ANSWER: 40 soat [182-modda]", out.getvalue())
+        self.assertIn("ANSWER: 40 soat [182-modda]\nCITATIONS: 182", out.getvalue())
 
 
 if __name__ == "__main__":

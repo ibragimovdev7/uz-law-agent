@@ -19,15 +19,14 @@ def main(argv=None):
     mode.add_argument("--record", metavar="NAME", help="run live and save the run to traces/NAME.json")
     mode.add_argument("--replay", metavar="NAME", help="replay traces/NAME.json offline")
     ap.add_argument("--max-steps", type=int, default=8, help="the step limit (default 8)")
-    ap.add_argument("--no-stop", action="store_true", help='do not cut the model off at "Observation:"')
     a = ap.parse_args(argv)
 
     if a.replay:
         saved = json.loads((TRACES / f"{a.replay}.json").read_text(encoding="utf-8"))
-        question, max_steps, stop = saved["question"], saved["max_steps"], saved["stop"]
+        question, max_steps = saved["question"], saved["max_steps"]
         model = Replay(saved["calls"], a.replay)
     elif a.question:
-        question, max_steps, stop = a.question, a.max_steps, not a.no_stop
+        question, max_steps = a.question, a.max_steps
         live = Gemini()
         model = Recorder(live) if a.record else live
     else:
@@ -35,14 +34,17 @@ def main(argv=None):
 
     print(f"Q: {question}", flush=True)
     try:
-        answer, trace = run(question, Law(LABOR_CODE), model, max_steps=max_steps, stop=stop, show=print)
+        answer, trace = run(question, Law(LABOR_CODE), model, max_steps=max_steps, show=print)
     except RuntimeError as e:                 # an API error, or a replay that no longer matches
         raise SystemExit(f"error: {e}") from None
-    print(f"\nANSWER: {answer}")
+    if answer:
+        print(f"\nANSWER: {answer['answer']}\nCITATIONS: {', '.join(answer['citations']) or '-'}")
+    else:
+        print("\nANSWER: none")
     if a.record:
         TRACES.mkdir(exist_ok=True)
-        saved = {"model": live.model, "question": question, "max_steps": max_steps, "stop": stop,
-                 "answer": answer, "trace": trace, "calls": model.calls}
+        saved = {"model": live.model, "question": question, "max_steps": max_steps, "answer": answer,
+                 "trace": trace, "calls": model.calls}
         (TRACES / f"{a.record}.json").write_text(json.dumps(saved, ensure_ascii=False, indent=1) + "\n",
                                                  encoding="utf-8")
         print(f"saved traces/{a.record}.json")
