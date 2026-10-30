@@ -18,6 +18,14 @@ python3 -m agent --record q1_week "Normal ish haftasi necha soat?"   # also save
 python3 -m agent --replay q1_week                                    # replay a saved run: no key, no network
 ```
 
+Or ask in a web page, which shows each step as it happens and opens the text of a cited article:
+
+```bash
+python3 -m agent.web                  # then open http://127.0.0.1:8765 (--port to change it)
+```
+
+The server listens on this computer only (127.0.0.1); the key never reaches the page.
+
 The free tier allows only a few requests a minute (the client waits and retries), and Google may use what is sent on
 it to improve its products.
 
@@ -36,6 +44,7 @@ python3 -m unittest discover -s tests -v     # offline, no key
 | `agent/loop.py` | the agent loop, the tools' JSON schemas and the system prompt |
 | `agent/llm.py` | the model: Gemini live, recording and replay |
 | `agent/__main__.py` | the command line |
+| `agent/web.py`, `agent/web.html` | the web page: a local server and one HTML file, no packages |
 | `tests/` | tests |
 | `traces/` | recorded runs |
 | `docs/` | documentation |
