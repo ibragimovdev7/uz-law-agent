@@ -49,8 +49,12 @@ class Law:
         scored.sort(key=lambda x: -x[0])         # sort is stable, so equal scores stay in file order
         return [(a, self.articles[a]["title"], n) for n, a in scored[:k]]
 
+    def article_id(self, ref):
+        """The id of the article `ref` names ("182-modda" -> "182"), or None if there is no such article."""
+        m = ARTICLE_REF.fullmatch(str(ref).strip())
+        return m.group(1) if m and m.group(1) in self.articles else None
+
     def fetch_article(self, ref):
         """The full text of one article, or None if there is no such article."""
-        m = ARTICLE_REF.fullmatch(str(ref).strip())
-        a = m and self.articles.get(m.group(1))
+        a = self.articles.get(self.article_id(ref))
         return f"{a['article_display']}. {a['title']}\n{a['text']}" if a else None

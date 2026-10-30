@@ -82,6 +82,10 @@ class Fetch(unittest.TestCase):
     def test_no_such_article_is_none(self):
         for ref in ["1182", "0", "abc", "", "182, 183", "182.1"]:
             self.assertIsNone(LAW.fetch_article(ref), ref)
+            self.assertIsNone(LAW.article_id(ref), ref)
+
+    def test_the_id_of_what_a_model_may_write(self):
+        self.assertEqual({LAW.article_id(r) for r in ["182", "182-modda", "Art. 182", " 182 "]}, {"182"})
 
 
 class Loading(unittest.TestCase):
